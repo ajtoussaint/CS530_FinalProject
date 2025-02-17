@@ -1,3 +1,23 @@
+export function Welcome(){
+  return(
+    <main className="flex w-screen h-screen">
+      <div id="lefthalf" className="flex flex-col w-1/2 h-full">
+          <div className="flex-2 bg-red-500 items-center justify-center">
+            User input here
+          </div>
+          <div className="flex-1 bg-yellow-300 items-center justify-center">
+            Analysis here
+          </div>
+      </div>
+      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-500">
+        Automata here
+      </div>
+    </main>
+  )
+}
+
+/*
+//Original default config of this file
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 
@@ -87,3 +107,4 @@ const resources = [
     ),
   },
 ];
+ */

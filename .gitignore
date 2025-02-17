@@ -1,1 +1,9 @@
 TODO.md
+
+Start out with just divying up the home page into sections
+Top left is input
+right half is automata
+bottom left is analysis (NFA / DFA description output)
+
+Alphabet definition
+Text input that parases into relation matrix
