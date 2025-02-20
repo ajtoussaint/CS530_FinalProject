@@ -4,6 +4,11 @@ export function Welcome(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
   const [aInput, setAInput] = useState("");
   const [aError, setAError] = useState("");
+  const [inputIsText, setInputIsText] = useState(false)
+
+  const [states, setStates] = useState<string[]>([]);
+  const [sInput, setSInput] = useState("");
+  const [sError, setSError] = useState("");
 
   const updateAInput = (text: string) =>{
     console.log(text)
@@ -22,8 +27,20 @@ export function Welcome(){
     setAInput(text);
   }
 
+  const updateSInput = (text: string) => {
+    console.log(text)
+    if(text.length > 10){
+      setSError("10 character max")
+    }else if(text.length > 0 && !(/[a-zA-Z0-9]/.test(text))){
+      setSError("State names may only include characters a-z, A-Z, 0-9")
+    }else{
+      setSError("")
+    }
+    setSInput(text);
+  }
+
   const addCharacter = () =>{
-    if(!aError){
+    if(!aError && aInput.length == 1){
       setAlphabet( (prev) => {
         return [...prev, aInput];
       })
@@ -38,38 +55,131 @@ export function Welcome(){
     })
   }
 
+  const addState = () =>{
+    console.log("state adding")
+    if(!sError && sInput.length > 0){
+      //console.log(sError, sInput.length)
+      setStates( (prev) => [...prev,sInput])
+      setSInput("")
+    }
+  }
+
+  const removeState = (st:string) =>{
+    setStates( (prev) => prev.filter(s => s != st))
+  }
+
   return(
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
-          <div className="flex-2 bg-red-100 items-center justify-center text-black">
+          <div className="flex flex-col flex-3 bg-red-100 items-center justify-center text-black">
             <h1 className="text-2xl">User input here:</h1>
-            <h2 className="text-lg">Alphabet:</h2>
-            <div id="alphabetDisplay">{alphabet.map( char => {
-              return(
-                <button 
-                onClick={() => removeCharacter(char)}
-                className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
-                title={"remove " + char + " from alphabet"}>{char}</button>
-              )
-            })}</div> {/*each char is a button to remove it with popup*/}
-            <div id="alphabetInput">
-                Add Character to alphabet: 
-                <input 
-                  type="text" 
-                  value={aInput}
-                  onChange={(e) => updateAInput(e.target.value)}
-                  className="bg-white border-black" />
-                <div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
-                <button 
-                  className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-                  onClick={() => addCharacter()}
-                >
-                  Add
-                </button>
-
+            <div id="alphabetwrap">
+              <h2 className="text-xl">Alphabet:</h2>
+              <div id="alphabetDisplay">{alphabet.map( char => {
+                return(
+                  <button 
+                  onClick={() => removeCharacter(char)}
+                  className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
+                  title={"remove " + char + " from alphabet"}>{char}</button>
+                )
+              })}</div> 
+              <div id="alphabetInput">
+                  Add Character to alphabet: 
+                  <input 
+                    type="text" 
+                    value={aInput}
+                    onChange={(e) => updateAInput(e.target.value)}
+                    className="bg-white border-black" />
+                  <div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
+                  <button 
+                    className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                    onClick={() => addCharacter()}
+                  >
+                    Add
+                  </button>
+              </div>
             </div>
-            <h2 className="text-lg">Transitions</h2>
+
+            <div id="stateWrap">
+              <h2 className="text-xl">States:</h2>
+                <div id="statesDisplay">{states.map( st => {
+                  return(
+                    <button 
+                    onClick={() => removeState(st)}
+                    className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
+                    title={"remove state " + st}>{st}</button>
+                  )
+                })}</div> 
+                <div id="stateInput">
+                    Add new state: 
+                    <input 
+                      type="text" 
+                      value={sInput}
+                      onChange={(e) => updateSInput(e.target.value)}
+                      className="bg-white border-black" />
+                    <div id="stateError" className="text-red-500 h-2em">{sError}</div>
+                    <button 
+                      className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                      onClick={() => addState()}
+                    >
+                      Add
+                    </button>
+              </div>
+            </div>
+
+            <div id="transitionWrap">
+                <h2 className="text-xl">Transitions:</h2>
+                <table className="min-w-full table-auto border-collapse border border-gray-300">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      {alphabet.map((col, colIndex) => (
+                        <th key={colIndex}>{col}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {states.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        <td>{row}</td>
+                        {[["_", "q2"],["q1", "q3"],["q3", "q2"]][rowIndex].map(v => (
+                          <td>{v}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+            </div>
             
+            <div className="flex flex-col flex-grow-1">
+              <div className="flex-grow-1 flex flex-col bg-purple-500 w-full">
+                <div id="inputToggles" className="flex w-full justify-around">
+                  <button 
+                    className="flex bg-red-400 w-30 justify-center hover:cursor-pointer hover:bg-red-600"
+                    onClick={() => setInputIsText(false)}>gui input</button>
+                  <button 
+                  className="flex bg-blue-400 w-30 justify-center hover:cursor-pointer hover:bg-blue-600"
+                  onClick={() => setInputIsText(true)}>text input</button>
+                </div>
+                <div className="flex flex-grow-1 bg-green-100">
+                  {inputIsText ?(
+                      <div className="flex flex-grow-1 bg-blue-400">
+                        <p className="text-black-sm">
+                          Instructions: Each line of the text below defines a transition from one state to another on an input read. 
+                          The order should be &lt;start state&gt; &lt;character&gt; &lt;end state&gt; For example, if you had states named q1 and q2 and an alphabet character 1
+                          Then q1 1 q2 would define a transition from q1 to q2 on reading the character 1. State and character values are assumed based on the input transitions.
+                          To signify an epsilon transition use "\e" without quotation marks.</p>
+                      </div>
+                    )
+                  :(
+                      <div className="flex flex-grow-1 bg-red-400">
+                        gui
+                      </div>
+                    )
+                  }
+                </div>
+              </div>
+            </div>
           </div>
           <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
             Analysis here
