@@ -13,13 +13,14 @@ export function Welcome(){
     }else if(text.length > 0 && !(/[a-zA-Z0-9]/.test(text))){
       console.log("alphabet may only include characters a-z, A-Z, 0-9")
       setAError("alphabet may only include characters a-z, A-Z, 0-9")
+    }else if(alphabet.indexOf(text) >= 0){
+      setAError("character already in alphabet")
     }else{
       console.log("alphabet input updated")
       setAError("")
     }
     setAInput(text);
   }
-
 
   const addCharacter = () =>{
     if(!aError){
@@ -31,13 +32,26 @@ export function Welcome(){
     
   }
 
+  const removeCharacter = (char:string) =>{
+    setAlphabet( (prev) => {
+      return prev.filter(c => c != char)
+    })
+  }
+
   return(
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
           <div className="flex-2 bg-red-100 items-center justify-center text-black">
             <h1 className="text-2xl">User input here:</h1>
             <h2 className="text-lg">Alphabet:</h2>
-            <div id="alphabetDisplay">{alphabet.join(", ")}</div> {/*each char is a button to remove it with popup*/}
+            <div id="alphabetDisplay">{alphabet.map( char => {
+              return(
+                <button 
+                onClick={() => removeCharacter(char)}
+                className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
+                title={"remove " + char + " from alphabet"}>{char}</button>
+              )
+            })}</div> {/*each char is a button to remove it with popup*/}
             <div id="alphabetInput">
                 Add Character to alphabet: 
                 <input 
@@ -47,7 +61,7 @@ export function Welcome(){
                   className="bg-white border-black" />
                 <div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
                 <button 
-                  className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                  className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
                   onClick={() => addCharacter()}
                 >
                   Add
