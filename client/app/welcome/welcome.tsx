@@ -10,6 +10,9 @@ export function Welcome(){
   const [sInput, setSInput] = useState("");
   const [sError, setSError] = useState("");
 
+  //contains an array for each state, which contains a value for each char in alphabet
+  const [tTable, setTTable] = useState<string[][]>([])
+
   const updateAInput = (text: string) =>{
     console.log(text)
     if(text.length > 1){
@@ -44,15 +47,30 @@ export function Welcome(){
       setAlphabet( (prev) => {
         return [...prev, aInput];
       })
+
+      //update the t table to add a new "_" value to each array
+      setTTable( (prev) => prev.map(x => [...x, "_"]))
+
       setAInput("");
     }
     
   }
 
   const removeCharacter = (char:string) =>{
+    //update teh t table to remove the value in each array corresponding to the index of this character
+    //get the index
+    let ind = alphabet.indexOf(char)
+
+    setTTable( (prev) => {
+      let newar = [...prev]
+      return newar.map(a => a.splice(ind,1)) //TODO: test if these setTTable functions actually work!
+    })
+
     setAlphabet( (prev) => {
       return prev.filter(c => c != char)
     })
+
+    
   }
 
   const addState = () =>{
@@ -62,9 +80,24 @@ export function Welcome(){
       setStates( (prev) => [...prev,sInput])
       setSInput("")
     }
+    let arr = []
+    for(let i =0; i < alphabet.length; i++){
+      arr.push("_")
+    }
+    //add new array to the t table
+    setTTable( (prev) => [...prev, arr])
   }
 
   const removeState = (st:string) =>{
+    //remove array from the ttable corresponding to this index
+    //find index of the state
+    let ind = states.indexOf(st)
+    //splice out the value of this from the ttable array
+    setTTable( (prev) => {
+      let newar = [...prev]
+      newar.splice(ind, 1)
+      return newar
+    })
     setStates( (prev) => prev.filter(s => s != st))
   }
 
