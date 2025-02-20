@@ -3,23 +3,32 @@ import { useState } from "react";
 export function Welcome(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
   const [aInput, setAInput] = useState("");
+  const [aError, setAError] = useState("");
 
   const updateAInput = (text: string) =>{
     console.log(text)
     if(text.length > 1){
       console.log("alphabet must be single character")
-      //too long, do not update and show an error
-    }else if(text.length > 0 && !(/[a-zA-Z0-9]/.test(text))){ //update to check for bad characters
+      setAError("alphabet can only include single characters")
+    }else if(text.length > 0 && !(/[a-zA-Z0-9]/.test(text))){
       console.log("alphabet may only include characters a-z, A-Z, 0-9")
+      setAError("alphabet may only include characters a-z, A-Z, 0-9")
     }else{
       console.log("alphabet input updated")
-      setAInput(text);
+      setAError("")
     }
+    setAInput(text);
   }
 
-  const testfunc = () =>{
-    console.log("is this thing on")
-    setAlphabet(["a", "b"])
+
+  const addCharacter = () =>{
+    if(!aError){
+      setAlphabet( (prev) => {
+        return [...prev, aInput];
+      })
+      setAInput("");
+    }
+    
   }
 
   return(
@@ -36,9 +45,17 @@ export function Welcome(){
                   value={aInput}
                   onChange={(e) => updateAInput(e.target.value)}
                   className="bg-white border-black" />
+                <div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
+                <button 
+                  className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                  onClick={() => addCharacter()}
+                >
+                  Add
+                </button>
+
             </div>
             <h2 className="text-lg">Transitions</h2>
-            <button className="md-4 bg-black" onClick={() => testfunc()}>xdfs</button>
+            
           </div>
           <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
             Analysis here
