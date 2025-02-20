@@ -1,20 +1,56 @@
+import { useState } from "react";
+
 export function Welcome(){
+  const [alphabet, setAlphabet] = useState<string[]>([]);
+  const [aInput, setAInput] = useState("");
+
+  const updateAInput = (text: string) =>{
+    console.log(text)
+    if(text.length > 1){
+      console.log("alphabet must be single character")
+      //too long, do not update and show an error
+    }else if(text.length > 0 && !(/[a-zA-Z0-9]/.test(text))){ //update to check for bad characters
+      console.log("alphabet may only include characters a-z, A-Z, 0-9")
+    }else{
+      console.log("alphabet input updated")
+      setAInput(text);
+    }
+  }
+
+  const testfunc = () =>{
+    console.log("is this thing on")
+    setAlphabet(["a", "b"])
+  }
+
   return(
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
-          <div className="flex-2 bg-red-500 items-center justify-center">
-            User input here
+          <div className="flex-2 bg-red-100 items-center justify-center text-black">
+            <h1 className="text-2xl">User input here:</h1>
+            <h2 className="text-lg">Alphabet:</h2>
+            <div id="alphabetDisplay">{alphabet.join(", ")}</div> {/*each char is a button to remove it with popup*/}
+            <div id="alphabetInput">
+                Add Character to alphabet: 
+                <input 
+                  type="text" 
+                  value={aInput}
+                  onChange={(e) => updateAInput(e.target.value)}
+                  className="bg-white border-black" />
+            </div>
+            <h2 className="text-lg">Transitions</h2>
+            <button className="md-4 bg-black" onClick={() => testfunc()}>xdfs</button>
           </div>
-          <div className="flex-1 bg-yellow-300 items-center justify-center">
+          <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
             Analysis here
           </div>
       </div>
-      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-500">
+      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-100 text-black">
         Automata here
       </div>
     </main>
   )
 }
+
 
 /*
 //Original default config of this file
