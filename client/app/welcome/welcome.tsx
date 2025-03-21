@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { KeyboardEvent } from "react";
 
 export function Welcome(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
@@ -48,6 +49,12 @@ export function Welcome(){
     setSInput(text);
   }
 
+  const alphaInKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if(e.key == "Enter"){
+      addCharacter()
+    }
+  }
+
   //ttable works
   const addCharacter = () =>{
     if(!aError && aInput.length == 1){
@@ -63,15 +70,22 @@ export function Welcome(){
     
   }
 
-  //ttable works
+  //TODO removing character messes up state table
   const removeCharacter = (char:string) =>{
     //update the t table to remove the value in each array corresponding to the index of this character
     //get the index
     let ind = alphabet.indexOf(char)
 
+    console.log("removing at ind ", ind)
+
     setTTable( (prev) => {
       let newar = [...prev]
-      return newar.map(a => a.splice(ind,1)) 
+      console.log("input newar", newar)
+      newar.forEach(row => {
+        row.splice(ind,1)
+        })
+      console.log("newar", newar)
+      return newar
     })
 
     setAlphabet( (prev) => {
@@ -131,7 +145,8 @@ export function Welcome(){
                     type="text" 
                     value={aInput}
                     onChange={(e) => updateAInput(e.target.value)}
-                    className="bg-white border-black" />
+                    className="bg-white border-black" 
+                    onKeyDown={alphaInKeydown}/>
                   <div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
                   <button 
                     className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
@@ -184,7 +199,7 @@ export function Welcome(){
                     {states.map((row, rowIndex) => (
                       <tr key={rowIndex}>
                         <td>{row}</td>
-                        {[["_", "q2"],["q1", "q3"],["q3", "q2"]][rowIndex].map((v, index) => (
+                        {tTable[rowIndex].map((v, index) => (
                           <td key={row + "-" + alphabet[index]}>{v}</td>
                         ))}
                       </tr>
