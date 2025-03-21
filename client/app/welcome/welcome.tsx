@@ -75,15 +75,18 @@ export function Welcome(){
     //update the t table to remove the value in each array corresponding to the index of this character
     //get the index
     let ind = alphabet.indexOf(char)
+    let initialLength = tTable[0].length
 
     console.log("removing at ind ", ind)
 
     setTTable( (prev) => {
       let newar = [...prev]
-      console.log("input newar", newar)
-      newar.forEach(row => {
-        row.splice(ind,1)
-        })
+      console.log("initial newar", newar)
+      if(newar[0].length == initialLength){//prevents React strict devmode from removing 2 rows
+        newar.forEach(row => {
+          row.splice(ind,1)
+          })
+      }
       console.log("newar", newar)
       return newar
     })
