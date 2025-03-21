@@ -13,6 +13,11 @@ export function Welcome(){
   //contains an array for each state, which contains a value for each char in alphabet
   const [tTable, setTTable] = useState<string[][]>([])
 
+  const testFunction = () =>{
+    console.log("test func")
+    console.log(tTable);
+  }
+
   const updateAInput = (text: string) =>{
     console.log(text)
     if(text.length > 1){
@@ -37,11 +42,13 @@ export function Welcome(){
     }else if(text.length > 0 && !(/[a-zA-Z0-9]/.test(text))){
       setSError("State names may only include characters a-z, A-Z, 0-9")
     }else{
+      console.log("state input updated")
       setSError("")
     }
     setSInput(text);
   }
 
+  //ttable works
   const addCharacter = () =>{
     if(!aError && aInput.length == 1){
       setAlphabet( (prev) => {
@@ -56,14 +63,15 @@ export function Welcome(){
     
   }
 
+  //ttable works
   const removeCharacter = (char:string) =>{
-    //update teh t table to remove the value in each array corresponding to the index of this character
+    //update the t table to remove the value in each array corresponding to the index of this character
     //get the index
     let ind = alphabet.indexOf(char)
 
     setTTable( (prev) => {
       let newar = [...prev]
-      return newar.map(a => a.splice(ind,1)) //TODO: test if these setTTable functions actually work!
+      return newar.map(a => a.splice(ind,1)) 
     })
 
     setAlphabet( (prev) => {
@@ -85,7 +93,7 @@ export function Welcome(){
       arr.push("_")
     }
     //add new array to the t table
-    setTTable( (prev) => [...prev, arr])
+    setTTable( (prev) => [...prev, arr])//TODO: check that this works
   }
 
   const removeState = (st:string) =>{
@@ -113,7 +121,8 @@ export function Welcome(){
                   <button 
                   onClick={() => removeCharacter(char)}
                   className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
-                  title={"remove " + char + " from alphabet"}>{char}</button>
+                  title={"remove " + char + " from alphabet"}
+                  key={char}>{char}</button>
                 )
               })}</div> 
               <div id="alphabetInput">
@@ -165,7 +174,7 @@ export function Welcome(){
                 <table className="min-w-full table-auto border-collapse border border-gray-300">
                   <thead>
                     <tr>
-                      <th></th>
+                      <th>states</th>
                       {alphabet.map((col, colIndex) => (
                         <th key={colIndex}>{col}</th>
                       ))}
@@ -175,8 +184,8 @@ export function Welcome(){
                     {states.map((row, rowIndex) => (
                       <tr key={rowIndex}>
                         <td>{row}</td>
-                        {[["_", "q2"],["q1", "q3"],["q3", "q2"]][rowIndex].map(v => (
-                          <td>{v}</td>
+                        {[["_", "q2"],["q1", "q3"],["q3", "q2"]][rowIndex].map((v, index) => (
+                          <td key={row + "-" + alphabet[index]}>{v}</td>
                         ))}
                       </tr>
                     ))}
@@ -216,6 +225,12 @@ export function Welcome(){
           </div>
           <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
             Analysis here
+            <button 
+              className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+              onClick={() => testFunction()}
+            >
+              Testing Button
+            </button>
           </div>
       </div>
       <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-100 text-black">
