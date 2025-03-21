@@ -95,6 +95,12 @@ export function Welcome(){
     
   }
 
+  const stateInKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if(e.key == "Enter"){
+      addState()
+    }
+  }
+
   const addState = () =>{
     console.log("state adding")
     if(!sError && sInput.length > 0){
@@ -173,7 +179,8 @@ export function Welcome(){
                       type="text" 
                       value={sInput}
                       onChange={(e) => updateSInput(e.target.value)}
-                      className="bg-white border-black" />
+                      className="bg-white border-black"
+                      onKeyDown={stateInKeydown} />
                     <div id="stateError" className="text-red-500 h-2em">{sError}</div>
                     <button 
                       className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
