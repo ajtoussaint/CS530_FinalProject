@@ -11,12 +11,26 @@ export function Welcome(){
   const [sInput, setSInput] = useState("");
   const [sError, setSError] = useState("");
 
+  //related to editing transition table
+  const [toggleTrans, setToggleTrans] = useState(false)
+  const [transChar, setTransChar] = useState("");
+  const [transState, setTransState] = useState("");
+
+  const toggleTransEditor = (char: string, state: string) =>{
+    console.log("toggling trans editor")
+    setTransChar(char)
+    setTransState(state)
+    setToggleTrans(true)
+  }
+
   //contains an array for each state, which contains a value for each char in alphabet
   const [tTable, setTTable] = useState<string[][]>([])
 
   const testFunction = () =>{
     console.log("test func")
-    console.log(tTable);
+    setToggleTrans( prev => {
+      return !prev
+    })
   }
 
   const updateAInput = (text: string) =>{
@@ -210,7 +224,11 @@ export function Welcome(){
                       <tr key={rowIndex}>
                         <td>{row}</td>
                         {tTable[rowIndex].map((v, index) => (
-                          <td key={row + "-" + alphabet[index]}>{v}</td>
+                          <td key={row + "-" + alphabet[index]}><button
+                          onClick={() => toggleTransEditor(alphabet[index], row)}
+                          title="edit"
+                          className="text-black solid-black px-4 py-2 cursor-pointer hover:bg-gray-100"
+                          >{v}</button></td>
                         ))}
                       </tr>
                     ))}
@@ -261,6 +279,18 @@ export function Welcome(){
       <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-100 text-black">
         Automata here
       </div>
+      {toggleTrans && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+            <div className="flex flex-col bg-white p-6 rounded-lg shadow-xl text-center">
+              <h2 className="text-black text-xl font-bold">When in state "{transState}" reading "{transChar}" transition to</h2>
+              <button
+              className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+              onClick={() => setToggleTrans(false)}>
+                X
+              </button>
+            </div>
+        </div>
+      )}
     </main>
   )
 }
