@@ -1,5 +1,20 @@
 import { useState } from "react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, ChangeEvent } from "react";
+
+//todo list
+// - epsilon transition check box
+// - change text description to a popup
+// - explain adding alphabet characters to the text input
+// - big text input box
+// - update ttable function that is a wrapper for setTtable to update both text and gui (if needed)
+
+// - generate fa button
+// - make a big svg appear
+// - scrollable svg
+// - calculate necessary size based on # states
+// - generate appropriate size
+// - place circles evenly spaced
+// - place hemispherical arrows based on ttable
 
 export function Welcome(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
@@ -16,10 +31,16 @@ export function Welcome(){
   const [transChar, setTransChar] = useState("");
   const [transState, setTransState] = useState("");
 
+  //dropdown to select state in transition table
+  const [selectedState, setSelectedState] = useState("")
+
   const toggleTransEditor = (char: string, state: string) =>{
-    console.log("toggling trans editor")
+    console.log("toggling trans editor", char, state)
     setTransChar(char)
     setTransState(state)
+    //set the selected state to what it is in the ttable
+    let stateToSelect = tTable[states.indexOf(state)][alphabet.indexOf(char)]
+    setSelectedState(stateToSelect)
     setToggleTrans(true)
   }
 
@@ -84,7 +105,7 @@ export function Welcome(){
     
   }
 
-  //TODO removing character messes up state table
+  
   const removeCharacter = (char:string) =>{
     //update the t table to remove the value in each array corresponding to the index of this character
     //get the index
@@ -130,7 +151,7 @@ export function Welcome(){
       arr.push("_")
     }
     //add new array to the t table
-    setTTable( (prev) => [...prev, arr])//TODO: check that this works
+    setTTable( (prev) => [...prev, arr])
   }
 
   const removeState = (st:string) =>{
@@ -144,6 +165,12 @@ export function Welcome(){
       return newar
     })
     setStates( (prev) => prev.filter(s => s != st))
+  }
+
+  const handleStateSelect = (e: ChangeEvent<HTMLSelectElement>, state: string, char: string) =>{
+    //also needs to update the ttable
+    tTable[states.indexOf(state)][alphabet.indexOf(char)] = e.target.value
+    setSelectedState(e.target.value);
   }
 
   return(
@@ -283,6 +310,16 @@ export function Welcome(){
         <div className="fixed inset-0 flex items-center justify-center bg-black/50">
             <div className="flex flex-col bg-white p-6 rounded-lg shadow-xl text-center">
               <h2 className="text-black text-xl font-bold">When in state "{transState}" reading "{transChar}" transition to</h2>
+              <select
+              id="stateDropdown"
+              value={selectedState}
+              className="text-black w-full p-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => handleStateSelect(e, transState, transChar)}>
+                <option value="_">No transition</option>
+                {states.map( state => (
+                  <option value={state}>{state}</option>
+                ))}
+              </select>
               <button
               className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
               onClick={() => setToggleTrans(false)}>
