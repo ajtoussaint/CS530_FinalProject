@@ -303,8 +303,27 @@ export function Welcome(){
             </button>
           </div>
       </div>
-      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-100 text-black">
-        Automata here
+      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-100 text-black p-5">
+        <h2>Automata here</h2>
+        <button
+        className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+          Generate Automata
+        </button>
+        <div
+        id="svgWrapper1"
+        className="w-full h-full bg-purple-300 max-w-full max-h-full overflow-auto rounded-lg">
+          <div 
+          id="svgWrapper2"
+          className="flex-col items-center justify-center w-full h-full bg-green-300 max-w-full max-h-full"
+          >
+            <svg viewBox="0 0 1000 1000" className="w-[1000px] h-[1000px] bg-white">
+              <circle cx="500" cy="500" r="400" stroke="blue" strokeWidth="10" fill="lightblue" />
+              <rect x="300" y="300" width="400" height="400" fill="orange" stroke="red" strokeWidth="5" />
+              <line x1="100" y1="100" x2="900" y2="900" stroke="green" strokeWidth="8" />
+              <circle cx="0" cy="0" r="400" stroke="red" strokeWidth="10" fill="pink" />
+            </svg>
+          </div>
+        </div>
       </div>
       {toggleTrans && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50">
