@@ -3,14 +3,12 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 
 //todo list
 // - epsilon transition check box
-// - change text description to a popup
-// - explain adding alphabet characters to the text input
+// - change explanation of how to use text input to a popup
 // - big text input box
 // - update ttable function that is a wrapper for setTtable to update both text and gui (if needed)
 
 // - generate fa button
 // - make a big svg appear
-// - scrollable svg
 // - calculate necessary size based on # states
 // - generate appropriate size
 // - place circles evenly spaced
@@ -173,6 +171,32 @@ export function Welcome(){
     setSelectedState(e.target.value);
   }
 
+  const generateSVG = () => {
+    console.log("generating svg...")
+
+  }
+
+  type SvgStateProps = {
+    sName: string;
+    x: number;
+    y: number;
+    size: number
+  }
+
+  const SvgState: React.FC<SvgStateProps> = ({
+    sName,
+    x,
+    y,
+    size
+  }) => {
+    return(
+      <g>
+      	<circle cx={x} cy={y} r={size} stroke="black" strokeWidth="5" fill="white" />
+      	<text x={x} y={y} fontSize={20} fill="black" fontFamily="monospace"	textAnchor="middle">{sName}</text>
+      </g>
+    )
+  }
+
   return(
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
@@ -316,11 +340,12 @@ export function Welcome(){
           id="svgWrapper2"
           className="flex-col items-center justify-center w-full h-full bg-green-300 max-w-full max-h-full"
           >
-            <svg viewBox="0 0 1000 1000" className="w-[1000px] h-[1000px] bg-white">
-              <circle cx="500" cy="500" r="400" stroke="blue" strokeWidth="10" fill="lightblue" />
+            <svg viewBox="0 0 1000 1000" className="w-full h-full bg-white">
+              <SvgState x={100} y={100} size={50} sName="qx"/>
+              {/*<circle cx="500" cy="500" r="400" stroke="blue" strokeWidth="10" fill="lightblue" />
               <rect x="300" y="300" width="400" height="400" fill="orange" stroke="red" strokeWidth="5" />
               <line x1="100" y1="100" x2="900" y2="900" stroke="green" strokeWidth="8" />
-              <circle cx="0" cy="0" r="400" stroke="red" strokeWidth="10" fill="pink" />
+              <circle cx="0" cy="0" r="400" stroke="red" strokeWidth="10" fill="pink" />*/}
             </svg>
           </div>
         </div>
