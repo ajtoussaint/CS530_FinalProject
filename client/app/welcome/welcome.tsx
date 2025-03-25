@@ -327,6 +327,15 @@ export function Welcome(){
     )
   }
 
+  const stateIndexToCoords = (index:number) => {
+    let nodesInCol = Math.ceil((svgHeight-(2 * statePadding))/stateSpacing)
+    let col = Math.ceil((index+1)/nodesInCol)
+    let row = index % nodesInCol
+    let x = statePadding + stateSpacing*(col-1);
+    let y = statePadding + stateSpacing * (row);
+    return {x, y} //returns object with these attr names
+  }
+
   return(
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
@@ -498,17 +507,12 @@ export function Welcome(){
              
               {states.map((s, index) => {
 								//calculate x and y index
-                let height = svgHeight
-                if(!height){
+                if(!svgHeight){
                   return(<g></g>)
                 }else{
-									let nodesInCol = Math.ceil((height-(2 * statePadding))/stateSpacing)
-                  let col = Math.ceil((index+1)/nodesInCol)
-                  let row = index % nodesInCol
-                  let xloc = statePadding + stateSpacing*(col-1);
-                  let yloc = statePadding + stateSpacing * (row);
+                  const loc = stateIndexToCoords(index)
                   return(
-										<SvgState x={xloc} y={yloc} sName={s}/>
+										<SvgState x={loc.x} y={loc.y} sName={s}/>
                   )
                 }
               })}
