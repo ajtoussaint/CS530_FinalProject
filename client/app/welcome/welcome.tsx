@@ -4,8 +4,8 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //urgent
-// - calculate and update SVG width every time states updates
 // - place hemispherical arrows based on ttable
+// - build
 
 
 //qol
@@ -329,7 +329,7 @@ export function Welcome(){
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
           <div className="flex flex-col flex-3 bg-red-100 items-center justify-center text-black">
-            <h1 className="text-2xl">User input here:</h1>
+            <h1 className="text-2xl">Describe the FA:</h1>
             <div id="alphabetwrap">
               <h2 className="text-xl">Alphabet:</h2>
               <div id="alphabetDisplay">{alphabet.map( char => {
@@ -431,7 +431,7 @@ export function Welcome(){
                 </table>
             </div>
             
-            <div className="flex flex-col flex-grow-1">
+            {/*<div className="flex flex-col flex-grow-1">
               <div className="flex-grow-1 flex flex-col bg-purple-500 w-full">
                 <div id="inputToggles" className="flex w-full justify-around">
                   <button 
@@ -459,7 +459,7 @@ export function Welcome(){
                   }
                 </div>
               </div>
-            </div>
+            </div>*/}
           </div>
           <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
             Analysis here
