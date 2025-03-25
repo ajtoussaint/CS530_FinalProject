@@ -4,13 +4,11 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //urgent
-// - identify final states
-// - identify starting state -> assume first defined state is starting then include radio buttons, check boxes for final states
-// - calculate start and end points to prevent overlap
-// - if moving right its uppper, moving left false upper
+// - identify final states (check boxes)
+// - default existing start state named "start"
 // - calculate and update SVG width every time states updates
 // - place hemispherical arrows based on ttable
-// - arrows have text to show the character
+
 
 //qol
 // - prevent adding same state twice
@@ -269,21 +267,27 @@ export function Welcome(){
     let upper = x2 == x1 ? y2 > y1 : x2 > x1
 		let hDir = x2 > x1 ? 1 : -1 //edge case of 0 cancels the term so don't care
     let vDir = y2 > y1 ? 1 : -1
-    let hDirOff = vDir > 0 ? upper ? 1 : -1 : upper ? -1 : 1;
+    let hDirOff = vDir 
     let vDirOff = upper ? -1 : 1;
 
     let ax = x1 + xdist/2 * hDir + xoff * hDirOff
     let ay = y1 + ydist/2 * vDir + yoff * vDirOff
 
+    const charOff = 0.7
+    let cax = x1 + xdist/2 * hDir + xoff*charOff * hDirOff
+    let cay = y1 + ydist/2 * vDir + yoff*charOff * vDirOff
+    //        70 + |       0     |+ 60   * -1
+
     
     return (
       <g>
         <path d={`M ${x1} ${y1} Q ${ax} ${ay}, ${x2} ${y2}`}
-        stroke={upper ? "black" : "blue"} 
+        stroke={"black"} 
         stroke-width="4" 
         fill="none"
         marker-end="url(#arrowhead)" />
-        <circle cx={ax} cy={ay} r={5} fill="red"/>
+        {/*<circle cx={ax} cy={ay} r={5} fill="red"/>*/}
+        <text x={cax} y={cay} fontFamily="monospace" fontSize={20} textAnchor="middle" dominantBaseline="middle">{charName}</text>
       </g>
     )
   }
@@ -456,8 +460,8 @@ export function Welcome(){
                   )
                 }
               })}
-              <SvgTransition charName="q1 q3" x1={130} y1={70} x2={370} y2={70} />
-              <SvgTransition charName="q3 q1" x1={370} y1={130} x2={130} y2={130}  />
+              <SvgTransition charName="b" x1={130} y1={70} x2={370} y2={70} />
+              {/*<SvgTransition charName="q3 q1" x1={370} y1={130} x2={130} y2={130}  />
 
               <SvgTransition charName="q4 q1" x1={370} y1={370} x2={130} y2={130} />
               <SvgTransition charName="q1 q4" x1={130} y1={130} x2={370} y2={370} />
@@ -465,10 +469,17 @@ export function Welcome(){
               <SvgTransition charName="q2 q4" x1={130} y1={370} x2={370} y2={370} />
               <SvgTransition charName="q4 q2" x1={370} y1={430} x2={130} y2={430}  />
 
-              <SvgTransition charName="q1 q2" x1={130} y1={130} x2={130} y2={370} />
-              <SvgTransition charName="q2 q1" x1={70} y1={370} x2={70} y2={130}  />
+              <SvgTransition charName="q1 q2" x1={130} y1={130} x2={130} y2={370} />*/}
+              <SvgTransition charName="a" x1={70} y1={370} x2={70} y2={130}  />
 
-              {/*Try q2 q3 here*/}
+              {/*<SvgTransition charName="q3 q4" x1={430} y1={130} x2={430} y2={370}  />
+              <SvgTransition charName="q4 q3" x1={370} y1={370} x2={370} y2={130}  />
+
+              <SvgTransition charName="q2 q3" x1={130} y1={370} x2={370} y2={130} />
+              <SvgTransition charName="q3 q2" x1={370} y1={130} x2={130} y2={370} />
+
+              <SvgTransition charName="q2 q5" x1={130} y1={370} x2={670} y2={130} />
+              <SvgTransition charName="q5 q1" x1={670} y1={130} x2={130} y2={130} />*/}
             </svg>
           </div>
         </div>
