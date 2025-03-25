@@ -4,8 +4,6 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //urgent
-// - identify final states (check boxes)
-// - default existing start state named "start"
 // - calculate and update SVG width every time states updates
 // - place hemispherical arrows based on ttable
 
@@ -161,16 +159,20 @@ export function Welcome(){
     console.log("state adding")
     if(!sError && sInput.length > 0){
       //console.log(sError, sInput.length)
-      setStates( (prev) => [...prev,sInput])
+      setStates( (prev) => {
+        let newarr = [...prev,sInput]
+				updateSvgWidth(svgHeight, newarr.length)
+        return newarr
+      })
       setIsFinal((prev) => [...prev, false])
       setSInput("")
+      let arr = []
+    	for(let i =0; i < alphabet.length; i++){
+      	arr.push("_")
+    	}
+    	//add new array to the t table
+    	setTTable( (prev) => [...prev, arr])
     }
-    let arr = []
-    for(let i =0; i < alphabet.length; i++){
-      arr.push("_")
-    }
-    //add new array to the t table
-    setTTable( (prev) => [...prev, arr])
   }
 
   const removeState = (st:string) =>{
@@ -191,7 +193,11 @@ export function Welcome(){
       return newar
     })
 
-    setStates( (prev) => prev.filter(s => s != st))
+    setStates( (prev) => {
+      let newarr = prev.filter(s => s != st)
+			updateSvgWidth(svgHeight, newarr.length)
+    	return newarr
+    })
   }
 
   const handleStateSelect = (e: ChangeEvent<HTMLSelectElement>, state: string, char: string) =>{
@@ -221,9 +227,17 @@ export function Welcome(){
 
 	useEffect(() => {
   	if (svgRef.current) {
-    	setSvgHeight(svgRef.current.height.baseVal.value);
+      let h = svgRef.current.height.baseVal.value
+    	setSvgHeight(h);
   	}
 	}, []);
+
+  const updateSvgWidth = (h:number, nStates:number) => {
+    let nodesInCol = Math.ceil((h-(2 * statePadding))/stateSpacing)
+    let requiredWidth = (2 * statePadding) + (Math.ceil(nStates / nodesInCol) - 1) * stateSpacing
+    //console.log("nodes", nodesInCol , "w", requiredWidth)
+    setSvgWidth(requiredWidth)
+  }
 
 
   const generateSVG = () => {
