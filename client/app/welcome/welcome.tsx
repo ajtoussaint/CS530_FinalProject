@@ -39,6 +39,8 @@ export function Welcome(){
   const [states, setStates] = useState<string[]>(["S"]);
   const [sInput, setSInput] = useState("");
   const [sError, setSError] = useState("");
+  //tracks final states
+  const [isFinal, setIsFinal] = useState<boolean[]>([false])
 
   //related to editing transition table
   const [toggleTrans, setToggleTrans] = useState(false)
@@ -160,6 +162,7 @@ export function Welcome(){
     if(!sError && sInput.length > 0){
       //console.log(sError, sInput.length)
       setStates( (prev) => [...prev,sInput])
+      setIsFinal((prev) => [...prev, false])
       setSInput("")
     }
     let arr = []
@@ -180,6 +183,14 @@ export function Welcome(){
       newar.splice(ind, 1)
       return newar
     })
+
+    //splice out the value of isFinal
+		setIsFinal( (prev) => {
+      let newar = [...prev]
+      newar.splice(ind, 1)
+      return newar
+    })
+
     setStates( (prev) => prev.filter(s => s != st))
   }
 
@@ -187,6 +198,14 @@ export function Welcome(){
     //also needs to update the ttable
     tTable[states.indexOf(state)][alphabet.indexOf(char)] = e.target.value
     setSelectedState(e.target.value);
+  }
+
+  const handleFinalityChange = (i:number) => {
+    setIsFinal( (prev) => {
+      let newar = [...prev]
+      newar[i] = !prev[i]
+      return newar
+    })
   }
 
   
@@ -239,6 +258,7 @@ export function Welcome(){
     return(
       <g>
       	<circle cx={x} cy={y} r={30} stroke="black" strokeWidth="3" fill="white" />
+        {isFinal[states.indexOf(sName)] && (<circle cx={x} cy={y} r={20} stroke="black" strokeWidth="2" fill="none"/>)}
       	<text x={x} y={y} fontSize={20} fill="black" fontFamily="monospace"	textAnchor="middle" dominantBaseline="middle">{sName}</text>
       </g>
     )
@@ -285,9 +305,9 @@ export function Welcome(){
       <g>
         <path d={`M ${x1} ${y1} Q ${ax} ${ay}, ${x2} ${y2}`}
         stroke={"black"} 
-        stroke-width="4" 
+        strokeWidth="4" 
         fill="none"
-        marker-end="url(#arrowhead)" />
+        markerEnd="url(#arrowhead)" />
         {/*<circle cx={ax} cy={ay} r={5} fill="red"/>*/}
         <text x={cax} y={cay} fontFamily="monospace" fontSize={20} textAnchor="middle" dominantBaseline="middle">{charName}</text>
       </g>
@@ -370,7 +390,8 @@ export function Welcome(){
                 <table className="min-w-full table-auto border-collapse border border-gray-300">
                   <thead>
                     <tr>
-                      <th>states</th>
+                      <th className="px-4 py-2">finality</th>
+                      <th className="px-4 py-2">states</th>
                       {alphabet.map((col, colIndex) => (
                         <th key={colIndex}>{col}</th>
                       ))}
@@ -379,7 +400,13 @@ export function Welcome(){
                   <tbody>
                     {states.map((row, rowIndex) => (
                       <tr key={rowIndex}>
-                        <td>{row}</td>
+                        <td className="text-center"><input
+                        type="checkbox"
+                        checked={isFinal[rowIndex]}
+                        value={row}
+                        onChange={() => handleFinalityChange(rowIndex)}
+                        /></td>
+                        <td className="text-center">{row}</td>
                         {tTable[rowIndex].map((v, index) => (
                           <td key={row + "-" + alphabet[index]}><button
                           onClick={() => toggleTransEditor(alphabet[index], row)}
@@ -454,7 +481,7 @@ export function Welcome(){
       				<polygon points="0 0, 5 1.75, 0 3.5" fill="black" />
 			    	</marker>
   					</defs>
-            <path d="M 0 100 H 60" stroke="red" stroke-width="4" fill="none" marker-end="url(#arrowhead)" /> 
+            <path d="M 0 100 H 60" stroke="red" strokeWidth="4" fill="none" markerEnd="url(#arrowhead)" /> 
              
               {states.map((s, index) => {
 								//calculate x and y index
