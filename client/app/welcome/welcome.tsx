@@ -5,6 +5,8 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 
 //urgent
 // - place hemispherical arrows based on ttable
+// - choose location on circle edge to best suit arrow
+// - deal with self transitions
 // - build
 
 
