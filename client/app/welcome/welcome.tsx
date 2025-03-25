@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { KeyboardEvent, ChangeEvent } from "react";
 
 //todo list
@@ -217,17 +217,14 @@ export function Welcome(){
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const calcSvgWidth = () => {
-    let height = svgRef.current?.height.baseVal.value
-    if(height){
-			let nodesInCol = Math.ceil((height-(2 * statePadding))/stateSpacing)
-      let requiredWidth = (2 * statePadding) + (Math.ceil(states.length / nodesInCol) - 1) * stateSpacing
-      return requiredWidth
-    }
+  const [svgHeight, setSvgHeight] = useState(0);
 
-    console.log("unable to determine svg height")
-    return 0;
-  }
+	useEffect(() => {
+  	if (svgRef.current) {
+    	setSvgHeight(svgRef.current.height.baseVal.value);
+  	}
+	}, []);
+
 
   const generateSVG = () => {
     console.log("generating svg...")
@@ -257,8 +254,8 @@ export function Welcome(){
   }) => {
     return(
       <g>
-      	<circle cx={x} cy={y} r={30} stroke="black" strokeWidth="3" fill="white" />
-        {isFinal[states.indexOf(sName)] && (<circle cx={x} cy={y} r={20} stroke="black" strokeWidth="2" fill="none"/>)}
+      	<circle cx={x} cy={y} r={stateSize} stroke="black" strokeWidth="3" fill="white" />
+        {isFinal[states.indexOf(sName)] && (<circle cx={x} cy={y} r={stateSize*2/3} stroke="black" strokeWidth="2" fill="none"/>)}
       	<text x={x} y={y} fontSize={20} fill="black" fontFamily="monospace"	textAnchor="middle" dominantBaseline="middle">{sName}</text>
       </g>
     )
@@ -485,7 +482,7 @@ export function Welcome(){
              
               {states.map((s, index) => {
 								//calculate x and y index
-                let height = svgRef.current?.height.baseVal.value
+                let height = svgHeight
                 if(!height){
                   return(<g></g>)
                 }else{
