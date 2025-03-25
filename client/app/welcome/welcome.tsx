@@ -6,7 +6,7 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //urgent
 // - identify final states
 // - identify starting state -> assume first defined state is starting then include radio buttons, check boxes for final states
-// - place circles evenly spaced
+// - calculate and update SVG width every time states updates
 // - place hemispherical arrows based on ttable
 
 //qol
@@ -193,8 +193,21 @@ export function Welcome(){
   const [svgWidth, setSvgWidth] = useState(1000)
   const stateSpacing = 300
   const statePadding = 100
+  const stateSize = 30
 
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const calcSvgWidth = () => {
+    let height = svgRef.current?.height.baseVal.value
+    if(height){
+			let nodesInCol = Math.ceil((height-(2 * statePadding))/stateSpacing)
+      let requiredWidth = (2 * statePadding) + (Math.ceil(states.length / nodesInCol) - 1) * stateSpacing
+      return requiredWidth
+    }
+
+    console.log("unable to determine svg height")
+    return 0;
+  }
 
   const generateSVG = () => {
     console.log("generating svg...")
@@ -215,18 +228,16 @@ export function Welcome(){
     sName: string;
     x: number;
     y: number;
-    size: number
   }
 
   const SvgState: React.FC<SvgStateProps> = ({
     sName,
     x,
     y,
-    size
   }) => {
     return(
       <g>
-      	<circle cx={x} cy={y} r={size} stroke="black" strokeWidth="3" fill="white" />
+      	<circle cx={x} cy={y} r={30} stroke="black" strokeWidth="3" fill="white" />
       	<text x={x} y={y} fontSize={20} fill="black" fontFamily="monospace"	textAnchor="middle">{sName}</text>
       </g>
     )
@@ -377,15 +388,27 @@ export function Welcome(){
           className="flex-col items-center justify-center w-full h-full bg-green-300 max-w-full max-h-full"
           >
             <svg ref={svgRef} style={{ width: `${svgWidth}px` }} className="h-full bg-white">
-              <SvgState x={100} y={100} size={30} sName="qx"/>
-              <SvgState x={400} y={100} size={30} sName="qy"/>
-              <SvgState x={100} y={400} size={30} sName="qz"/>
-              <SvgState x={400} y={400} size={30} sName="qq"/>
-              <SvgState x={400} y={700} size={30} sName="qq"/>
-              {/*<circle cx="500" cy="500" r="400" stroke="blue" strokeWidth="10" fill="lightblue" />
-              <rect x="300" y="300" width="400" height="400" fill="orange" stroke="red" strokeWidth="5" />
-              <line x1="100" y1="100" x2="900" y2="900" stroke="green" strokeWidth="8" />
-              <circle cx="0" cy="0" r="400" stroke="red" strokeWidth="10" fill="pink" />*/}
+              {states.map((s, index) => {
+								//calculate x and y index
+                let height = svgRef.current?.height.baseVal.value
+                if(!height){
+                  return(<g></g>)
+                }else{
+									let nodesInCol = Math.ceil((height-(2 * statePadding))/stateSpacing)
+                  let col = Math.ceil((index+1)/nodesInCol)
+                  let row = index % nodesInCol
+                  let xloc = statePadding + stateSpacing*(col-1);
+                  let yloc = statePadding + stateSpacing * (row);
+                  return(
+										<SvgState x={xloc} y={yloc} sName={s}/>
+                  )
+                }
+              })}
+              {/*<SvgState x={100} y={100} sName="qx"/>
+              <SvgState x={400} y={100} sName="qy"/>
+              <SvgState x={100} y={400} sName="qz"/>
+              <SvgState x={400} y={400} sName="qq"/>
+              <SvgState x={400} y={700} sName="qq"/>*/}
             </svg>
           </div>
         </div>
