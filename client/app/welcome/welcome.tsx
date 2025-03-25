@@ -11,7 +11,7 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 
 
 //qol
-// - prevent adding same state twice
+// - prevent adding same state twice (general state input error checking)
 
 // - epsilon transition check box
 // - change explanation of how to use text input to a popup
@@ -36,7 +36,7 @@ export function Welcome(){
   const [aError, setAError] = useState("");
   const [inputIsText, setInputIsText] = useState(false)
 
-  const [states, setStates] = useState<string[]>([]);
+  const [states, setStates] = useState<string[]>(["S"]);
   const [sInput, setSInput] = useState("");
   const [sError, setSError] = useState("");
 
@@ -59,7 +59,7 @@ export function Welcome(){
   }
 
   //contains an array for each state, which contains a value for each char in alphabet
-  const [tTable, setTTable] = useState<string[][]>([])
+  const [tTable, setTTable] = useState<string[][]>([[]])
 
   const testFunction = () =>{
     console.log("test func")
@@ -87,10 +87,12 @@ export function Welcome(){
 
   const updateSInput = (text: string) => {
     console.log(text)
-    if(text.length > 10){
-      setSError("10 character max")
+    if(text.length > 4){
+      setSError("4 character max")
     }else if(text.length > 0 && !(/[a-zA-Z0-9]/.test(text))){
       setSError("State names may only include characters a-z, A-Z, 0-9")
+    }else if(states.indexOf(text) >= 0){
+    	setSError("state is already in use")
     }else{
       console.log("state input updated")
       setSError("")
@@ -237,7 +239,7 @@ export function Welcome(){
     return(
       <g>
       	<circle cx={x} cy={y} r={30} stroke="black" strokeWidth="3" fill="white" />
-      	<text x={x} y={y} fontSize={20} fill="black" fontFamily="monospace"	textAnchor="middle">{sName}</text>
+      	<text x={x} y={y} fontSize={20} fill="black" fontFamily="monospace"	textAnchor="middle" dominantBaseline="middle">{sName}</text>
       </g>
     )
   }
@@ -329,12 +331,21 @@ export function Welcome(){
             <div id="stateWrap">
               <h2 className="text-xl">States:</h2>
                 <div id="statesDisplay">{states.map( st => {
-                  return(
-                    <button 
-                    onClick={() => removeState(st)}
-                    className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
-                    title={"remove state " + st}>{st}</button>
-                  )
+                  if (st === "S"){
+										return(
+                      <button 
+                      onClick={() => alert("Cannot remove start state")}
+                      className="text-black solid-black px-4 py-2 cursor-pointer"
+                      title={"Cannot remove start state" + st}>{st}</button>
+                    )
+                  }else{
+										return(
+                      <button 
+                      onClick={() => removeState(st)}
+                      className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
+                      title={"remove state " + st}>{st}</button>
+                    )
+                  }
                 })}</div> 
                 <div id="stateInput">
                     Add new state: 
@@ -442,8 +453,9 @@ export function Welcome(){
             <marker id="arrowhead" markerWidth="5" markerHeight="3.5" refX="2" refY="1.75" orient="auto">
       				<polygon points="0 0, 5 1.75, 0 3.5" fill="black" />
 			    	</marker>
-
-  					</defs>	  
+  					</defs>
+            <path d="M 0 100 H 60" stroke="red" stroke-width="4" fill="none" marker-end="url(#arrowhead)" /> 
+             
               {states.map((s, index) => {
 								//calculate x and y index
                 let height = svgRef.current?.height.baseVal.value
