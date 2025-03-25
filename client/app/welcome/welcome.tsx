@@ -292,6 +292,28 @@ export function Welcome(){
     x2,
     y2,
   }) => {
+    //TODO calculate the x1 and x2 offsets based on where we are trying to go
+    //this way the element can just give coordinates from state to state
+
+    let soy = 0 //starting offset in x direction
+    let sox = 0
+    let eoy = 0
+    let eox = 0
+
+    let loop = false
+
+    if(x1 == x2 && y1 == y2){
+      loop = true
+      soy = -stateSize*1.1
+      eox = stateSize*1.1
+    }
+
+    x1 += sox;
+    x2 += eox;
+
+    y1 += soy;
+    y2 += eoy;
+
     //calculate the anchor point
     let ydist = Math.abs(y2 - y1)
     let xdist = Math.abs(x2 - x1)
@@ -305,6 +327,8 @@ export function Welcome(){
     let hDirOff = vDir 
     let vDirOff = upper ? -1 : 1;
 
+    
+
     let ax = x1 + xdist/2 * hDir + xoff * hDirOff
     let ay = y1 + ydist/2 * vDir + yoff * vDirOff
 
@@ -313,7 +337,13 @@ export function Welcome(){
     let cay = y1 + ydist/2 * vDir + yoff*charOff * vDirOff
     //        70 + |       0     |+ 60   * -1
 
-    
+    if(loop){
+      ax = x1 + 4*stateSize
+      ay = y2 - 4*stateSize
+      cax = x1 + 2.5*stateSize
+      cay = y2 - 2.5*stateSize
+    }
+
     return (
       <g>
         <path d={`M ${x1} ${y1} Q ${ax} ${ay}, ${x2} ${y2}`}
@@ -321,8 +351,14 @@ export function Welcome(){
         strokeWidth="4" 
         fill="none"
         markerEnd="url(#arrowhead)" />
-        {/*<circle cx={ax} cy={ay} r={5} fill="red"/>*/}
-        <text x={cax} y={cay} fontFamily="monospace" fontSize={20} textAnchor="middle" dominantBaseline="middle">{charName}</text>
+        <circle cx={ax} cy={ay} r={5} fill="red"/>
+        <text
+        x={cax}
+        y={cay}
+        fontFamily="monospace"
+        fontSize={20}
+        textAnchor="middle"
+        dominantBaseline="middle">{charName}</text>
       </g>
     )
   }
@@ -516,8 +552,29 @@ export function Welcome(){
                   )
                 }
               })}
-              <SvgTransition charName="b" x1={130} y1={70} x2={370} y2={70} />
-              {/*<SvgTransition charName="q3 q1" x1={370} y1={130} x2={130} y2={130}  />
+
+              {tTable.map((transitions, stateIndex) => {
+                return transitions.map((t, alphaIndex) => {
+                  if(t === "_"){
+                    return (
+                      <g></g>
+                    )
+                  }else{
+                    let loc1 = stateIndexToCoords(stateIndex)
+                    let loc2 = stateIndexToCoords(states.indexOf(t))
+                    return (
+                      <SvgTransition 
+                      charName={alphabet[alphaIndex]} 
+                      x1={loc1.x} 
+                      y1={loc1.y} 
+                      x2={loc2.x} 
+                      y2={loc2.y}/>
+                    )
+                  }
+                })
+              })}
+              {/*<SvgTransition charName="b" x1={130} y1={70} x2={370} y2={70} />
+              <SvgTransition charName="q3 q1" x1={370} y1={130} x2={130} y2={130}  />
 
               <SvgTransition charName="q4 q1" x1={370} y1={370} x2={130} y2={130} />
               <SvgTransition charName="q1 q4" x1={130} y1={130} x2={370} y2={370} />
@@ -525,10 +582,10 @@ export function Welcome(){
               <SvgTransition charName="q2 q4" x1={130} y1={370} x2={370} y2={370} />
               <SvgTransition charName="q4 q2" x1={370} y1={430} x2={130} y2={430}  />
 
-              <SvgTransition charName="q1 q2" x1={130} y1={130} x2={130} y2={370} />*/}
+              <SvgTransition charName="q1 q2" x1={130} y1={130} x2={130} y2={370} />
               <SvgTransition charName="a" x1={70} y1={370} x2={70} y2={130}  />
 
-              {/*<SvgTransition charName="q3 q4" x1={430} y1={130} x2={430} y2={370}  />
+              <SvgTransition charName="q3 q4" x1={430} y1={130} x2={430} y2={370}  />
               <SvgTransition charName="q4 q3" x1={370} y1={370} x2={370} y2={130}  />
 
               <SvgTransition charName="q2 q3" x1={130} y1={370} x2={370} y2={130} />
