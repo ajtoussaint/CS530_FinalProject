@@ -216,7 +216,7 @@ export function Welcome(){
 
   
   //SVG utils
-  const [svgWidth, setSvgWidth] = useState(1000)
+  const [svgWidth, setSvgWidth] = useState(0)
   const stateSpacing = 300
   const statePadding = 100
   const stateSize = 30
