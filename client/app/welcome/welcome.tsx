@@ -4,9 +4,8 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //urgent
-// - change explanation of how to use text input to a popup
-// - big text input box
-// - update ttable function that is a wrapper for setTtable to update both text and gui (if needed)
+// - removing state changes all references to it in tTable to "_"
+// - removing character updates tTable
 // - upload file to textbox
 // - download textbox as file
 // - build
@@ -44,6 +43,10 @@ export function Welcome(){
   const [toggleTrans, setToggleTrans] = useState(false)
   const [transChar, setTransChar] = useState("");
   const [transState, setTransState] = useState("");
+
+  //text Input
+  const [textInput, setTextInput] = useState("")
+  const [tIError, setTIError] = useState<string[]>([]) //error for state input
 
   //dropdown to select state in transition table
   const [selectedState, setSelectedState] = useState("")
@@ -98,6 +101,116 @@ export function Welcome(){
       setSError("")
     }
     setSInput(text);
+  }
+
+  const updateTextInput = (text: string) => {
+		console.log("Text input:", text);
+    let transArr = text.trim().split("\n");
+    console.log("Trans Arr", transArr);
+    let errorArr: string[] = []
+
+    //check that all transitions are the correct format
+    const transRe = /^\*?([a-zA-Z0-9]+)\s+([a-zA-Z0-9]+)\s+\*?([a-zA-Z0-9]+)$/
+
+    //set up values to use for updating alphabet, states, ect
+    let tAlphabet: string[] = []
+    let tStates: string[] = []
+    let tIsFinal: boolean[] = []
+    let tTTable: string[][] = [[]]
+
+    //ignore blank lines
+    transArr = transArr.filter(t => t.trim() !== "")
+
+    transArr.forEach((t, index) => {
+			//check that t is a pattern match
+      if(!transRe.test(t)){
+        errorArr.push(`line ${index+1} does not conform to the proper format: <optional *><state name> <char> <optional *><state name>`)
+      }else{
+        const matches = t.match(transRe);
+        
+        if (matches){
+          console.log("matched: ", "1", matches[1], "2", matches[2], "3", matches[3])
+          //add to alphabet
+          if(tAlphabet.indexOf(matches[2]) < 0){
+            tAlphabet.push(matches[2])
+            //increase length of each table in tTable
+            tTTable = tTTable.map(a => [...a, "_"])
+          }
+          
+          //if either state is not already in the states array push it
+          if(tStates.indexOf(matches[1]) < 0){
+            tStates.push(matches[1])
+            isFinal.push(false)
+            //add new standard lenth to t table
+            let tarr = []
+            for(let i =0; i < tAlphabet.length; i++){
+              tarr.push("_")
+            }
+            tTTable.push(tarr)
+          }
+
+          if(tStates.indexOf(matches[3]) < 0){
+            tStates.push(matches[3])
+            isFinal.push(false)
+            //extend all ttable lengths
+            let tarr = []
+            for(let i =0; i < tAlphabet.length; i++){
+              tarr.push("_")
+            }
+            tTTable.push(tarr)
+          }
+
+          //add the transition
+          console.log("state: ", tStates.indexOf(matches[1]), tStates)
+          console.log("alphabet: ", tAlphabet.indexOf(matches[2]), tAlphabet)
+          console.log("table: ", tTTable)
+          tTTable[tStates.indexOf(matches[1])][tAlphabet.indexOf(matches[2])] = matches[3]
+
+          if( t[t.indexOf(matches[1]) - 1] === "*"){
+            //first state is a final state
+						tIsFinal[tStates.indexOf(matches[1])] = true;
+          }
+
+          if( t[t.indexOf(matches[3]) - 1] === "*"){
+            //first state is a final state
+						tIsFinal[tStates.indexOf(matches[3])] = true;
+          }
+
+					if(matches[1].length > 4){
+						//first state is too long
+            errorArr.push(`Starting state on line ${index + 1} is longer than 4 characters`)
+          }
+          if(matches[2].length > 1 && matches[1] !== "\\e"){
+						//first state is too long
+            errorArr.push(`Transition character on line ${index + 1} is longer than 1 character`)
+          }
+          if(matches[3].length > 4){
+						//first state is too long
+            errorArr.push(`Ending state on line ${index + 1} is longer than 4 characters`)
+          }
+        }
+      }
+    })
+
+    //check for "S"
+    if(tStates.indexOf("S") < 0){
+      errorArr.push("Must use a state named S to signify starting state")
+    }
+
+    if(tIsFinal.filter(b => b).length < 1){
+      errorArr.push("At least one state must be identified as final by preceding with \"*\"")
+    }
+
+    //if there are no errors update the tTable, alphabet, states, and final
+    if(errorArr.length < 1){
+			console.log("table: ", tTTable);
+      setStates(tStates)
+      setAlphabet(tAlphabet)
+      setIsFinal(tIsFinal)
+      setTTable(tTTable)
+    }
+		setTIError(errorArr)
+    setTextInput(text);
   }
 
   const alphaInKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -183,6 +296,14 @@ export function Welcome(){
     setTTable( (prev) => {
       let newar = [...prev]
       newar.splice(ind, 1)
+      //change any references to the state to _
+      console.log("removing state", st)
+      newar = newar.map(n1 => {
+        return n1.map( n2 => {
+          console.log(n2, st)
+					return n2 == st ? "_" : n2
+        })
+      })
       return newar
     })
 
@@ -450,12 +571,30 @@ export function Welcome(){
                 </div>
                 <div className="flex flex-grow-1 bg-green-100">
                   {inputIsText ?(
-                      <div className="flex flex-grow-1 bg-blue-400">
+                      <div className="flex flex-col flex-grow-1 bg-blue-100">
                         <p className="text-black-sm">
                           Instructions: Each line of the text below defines a transition from one state to another on an input read. 
                           The order should be &lt;start state&gt; &lt;character&gt; &lt;end state&gt; For example, if you had states named q1 and q2 and an alphabet character 1
                           Then q1 1 q2 would define a transition from q1 to q2 on reading the character 1. State and character values are assumed based on the input transitions.
-                          To signify an epsilon transition use "\e" without quotation marks.</p>
+                          To signify an epsilon transition use "\e" without quotation marks. To signify a final state precede the state name with "*". The starting state is 
+                          required to be named "S". 
+                        </p>
+                        <div id="textInputWrapper" className="w-full h-full p-2 bg-gray-200">
+                        	<textarea
+                        	  className="bg-white w-full h-full "
+                        	  id="textInput"
+                        	  value={textInput}
+                            onChange={(e) => updateTextInput(e.target.value)}
+                        	/>
+                          
+                        </div>
+                        <div id="errorListWrapper">
+													<ul id="errorList">
+                          {tIError.map(err => (
+														<li className="text-red-500">{err}</li>
+													))}
+                          </ul>
+                        </div>
                       </div>
                     )
                   :(
@@ -578,7 +717,7 @@ export function Welcome(){
             </button>
           </div>
       </div>
-      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-blue-100 text-black p-5">
+      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-orange-100 text-black p-5">
         <h2>Automata here</h2>
         <button
         className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
