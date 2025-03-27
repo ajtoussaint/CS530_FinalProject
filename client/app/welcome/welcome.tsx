@@ -25,7 +25,7 @@ export function Welcome(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
   const [aInput, setAInput] = useState("");
   const [aError, setAError] = useState("");
-  const [inputIsText, setInputIsText] = useState(false)
+  const [inputIsText, setInputIsText] = useState(true)
 
   const [states, setStates] = useState<string[]>(["S"]);
   const [sInput, setSInput] = useState("");
@@ -60,9 +60,7 @@ export function Welcome(){
 
   const testFunction = () =>{
     console.log("test func")
-    setToggleTrans( prev => {
-      return !prev
-    })
+
   }
 
   const updateAInput = (text: string) =>{
@@ -120,9 +118,10 @@ export function Welcome(){
   }
 
   const updateTextInput = (text: string) => {
-		//console.log("Text input:", text);
+		console.log("Text input:", text);
     let transArr = text.trim().split("\n");
-    //console.log("Trans Arr", transArr);
+    transArr = transArr.map(x => x.replace("\r", ""))
+    console.log("Trans Arr", transArr);
     let errorArr: string[] = []
 
     //check that all transitions are the correct format
@@ -140,6 +139,7 @@ export function Welcome(){
     transArr.forEach((t, index) => {
 			//check that t is a pattern match
       if(!transRe.test(t)){
+        console.log(t, transRe.test(t))
         errorArr.push(`line ${index+1} does not conform to the proper format: <optional *><state name> <char> <optional *><state name>`)
       }else{
         const matches = t.match(transRe);
@@ -552,7 +552,7 @@ export function Welcome(){
         strokeWidth="4" 
         fill="none"
         markerEnd="url(#arrowhead)" />
-        <circle cx={ax} cy={ay} r={5} fill="red"/>
+        {/*<circle cx={ax} cy={ay} r={5} fill="red"/>*/}
         <text
         x={cax}
         y={cay}
@@ -573,6 +573,35 @@ export function Welcome(){
     return {x, y} //returns object with these attr names
   }
 
+  //File upload
+
+
+
+  //chatgpt generated functions
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === 'text/plain') {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if(reader.result){
+        	updateTextInput(reader.result as string);
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      alert('File format invalid');
+    }
+  };
+
+  const handleFileDownload = () => {
+    const blob = new Blob([textInput], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'FA';
+    link.click();
+  }
+
+
   return(
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
@@ -588,7 +617,7 @@ export function Welcome(){
                 <div className="flex flex-grow-1 bg-green-100">
                   {inputIsText ?(
                       <div className="flex flex-col flex-grow-1 bg-blue-100">
-                        <p className="text-black-sm">
+                        <p className="text-black-sm px-4 py-2">
                           Instructions: Each line of the text below defines a transition from one state to another on an input read. 
                           The order should be &lt;start state&gt; &lt;character&gt; &lt;end state&gt; For example, if you had states named q1 and q2 and an alphabet character 1
                           Then q1 1 q2 would define a transition from q1 to q2 on reading the character 1. State and character values are assumed based on the input transitions.
@@ -610,16 +639,17 @@ export function Welcome(){
 											      		accept=".txt"
 											      		name="upload"
 											      		className="hidden"  // Hide the original input
-											      		onChange={(e) => alert("ok")}
+											      		onChange={handleFileUpload}
 										  					/>
 											    </label>
 											    
 
                             <button
                             id="downloadFile"
+                            onClick={handleFileDownload}
                             className="text-sm text-black rounded-lg mr-5 py-1 px-3 border-[1px] font-medium bg-gray-100
                             hover:cursor-pointer hover:bg-gray-300">
-                              Download FA
+                              Download FA as txt File
                             </button>
                         </div>
                         <div id="textInputWrapper" className="w-full h-full p-2 bg-gray-200">
