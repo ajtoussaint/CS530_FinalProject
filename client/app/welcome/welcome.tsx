@@ -306,23 +306,73 @@ export function Welcome(){
     let horizontal = x1 == x2 ? 0 : x1 > x2 ? -1 : 1
     let vertical = y1 == y2 ? 0: y1 > y2 ? -1 : 1
 	
-    const magnitudes = [0.33, 0.67, 1, 1.1]
+    const magnitudes = [0.33, 0.67, 1, 1.1].map(x => x*stateSize)
     switch (`${horizontal} ${vertical}`){
       case "0 0":
         //destination = start
         loop = true
-        soy = -stateSize*magnitudes[3]
-      	eox = stateSize*magnitudes[3]
+        soy = -magnitudes[3]
+      	eox = magnitudes[3]
+        break;
       case "0 -1":
         //visually N
+        sox = -magnitudes[0]
+        soy = -magnitudes[3]
+        eox = -magnitudes[0]
+        eoy = magnitudes[3]
+        break;
+      case "-1 -1":
+        //visually NW
+        sox = -magnitudes[2]
+        soy = -magnitudes[1]
+        eox = magnitudes[1]
+        eoy = magnitudes[2]
+        break;
+      case "1 -1":
+      	//visually NE
+        sox = magnitudes[1]
+        soy = -magnitudes[2]
+        eox = -magnitudes[2]
+        eoy = magnitudes[1]
+        break;
 
+      case "1 0":
+        //visually E
+        sox = magnitudes[3]
+        soy = -magnitudes[0]
+        eox = -magnitudes[3]
+        eoy = -magnitudes[0]
+        break;
+      case "-1 0":
+        //visually W
+        sox = -magnitudes[3]
+        soy = magnitudes[0]
+        eox = magnitudes[3]
+        eoy = magnitudes[0]
+        break;
+      case "0 1":
+        //visually S
+        sox = magnitudes[0]
+        soy= magnitudes[3]
+        eox = magnitudes[0]
+        eoy = -magnitudes[3]
+        break;
+      case "-1 1":
+        //visually SW
+        sox = -magnitudes[1]
+        soy = magnitudes[2]
+        eox = magnitudes[2]
+        eoy = -magnitudes[1]
+        break;
+
+      case "1 1":
+        //visually SE
+        sox = magnitudes[2]
+        soy = magnitudes[1]
+        eox = -magnitudes[1]
+        eoy = -magnitudes[2]
+        break;
     }
-
-    /*if(x1 == x2 && y1 == y2){
-      loop = true
-      soy = -stateSize*magnitudes[3]
-      eox = stateSize*magnitudes[3]
-    }*/
 
     x1 += sox;
     x2 += eox;
