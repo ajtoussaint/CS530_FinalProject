@@ -25,7 +25,7 @@ function App(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
   const [aInput, setAInput] = useState("");
   const [aError, setAError] = useState("");
-  const [inputIsText, setInputIsText] = useState(true)
+  const [inputIsText, setInputIsText] = useState(false)
 
   const [states, setStates] = useState<string[]>(["S"]);
   const [sInput, setSInput] = useState("");
@@ -60,7 +60,7 @@ function App(){
 
   const testFunction = () =>{
     console.log("test func")
-
+    alert("This will determine DFA vs. NFA when the project is complete")
   }
 
   const updateAInput = (text: string) =>{
@@ -230,14 +230,14 @@ function App(){
   }
 
   const alphaInKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if(e.key == "Enter"){
+    if(e.key === "Enter"){
       addCharacter()
     }
   }
 
   //ttable works
   const addCharacter = () =>{
-    if(!aError && aInput.length == 1){
+    if(!aError && aInput.length === 1){
       setAlphabet( (prev) => {
         return [...prev, aInput];
       })
@@ -262,7 +262,7 @@ function App(){
     setTTable( (prev) => {
       let newar = [...prev]
       console.log("initial newar", newar)
-      if(newar[0].length == initialLength){//prevents React strict devmode from removing 2 rows
+      if(newar[0].length === initialLength){//prevents React strict devmode from removing 2 rows
         newar.forEach(row => {
           row.splice(ind,1)
           })
@@ -272,14 +272,14 @@ function App(){
     })
 
     setAlphabet( (prev) => {
-      return prev.filter(c => c != char)
+      return prev.filter(c => c !== char)
     })
 
     
   }
 
   const stateInKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if(e.key == "Enter"){
+    if(e.key === "Enter"){
       addState()
     }
   }
@@ -317,7 +317,7 @@ function App(){
       newar = newar.map(n1 => {
         return n1.map( n2 => {
           console.log(n2, st)
-					return n2 == st ? "_" : n2
+					return n2 === st ? "_" : n2
         })
       })
       return newar
@@ -331,7 +331,7 @@ function App(){
     })
 
     setStates( (prev) => {
-      let newarr = prev.filter(s => s != st)
+      let newarr = prev.filter(s => s !== st)
 			updateSvgWidth(svgHeight, newarr.length)
     	return newarr
     })
@@ -355,7 +355,7 @@ function App(){
   //SVG utils
   const [svgWidth, setSvgWidth] = useState(0)
   const stateSpacing = 300
-  const statePadding = 100
+  const statePadding = 200
   const stateSize = 30
 
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -377,7 +377,7 @@ function App(){
   }
 
 
-  const generateSVG = () => {
+  /*const generateSVG = () => {
     console.log("generating svg...")
 		let width = svgRef.current?.width.baseVal.value
     let height = svgRef.current?.height.baseVal.value
@@ -390,7 +390,7 @@ function App(){
       console.warn("not yet rendered the svg -andrew")
     }
     
-  }
+  }*/
 
   type SvgStateProps = {
     sName: string;
@@ -427,7 +427,7 @@ function App(){
     x2,
     y2,
   }) => {
-    //TODO calculate the x1 and x2 offsets based on where we are trying to go
+    //calculate the x1 and x2 offsets based on where we are trying to go
     //this way the element can just give coordinates from state to state
 
     let soy = 0 //starting offset in x direction
@@ -438,8 +438,8 @@ function App(){
     let loop = false
 
     //determine relative directions
-    let horizontal = x1 == x2 ? 0 : x1 > x2 ? -1 : 1
-    let vertical = y1 == y2 ? 0: y1 > y2 ? -1 : 1
+    let horizontal = x1 === x2 ? 0 : x1 > x2 ? -1 : 1
+    let vertical = y1 === y2 ? 0: y1 > y2 ? -1 : 1
 	
     const magnitudes = [0.33, 0.67, 1, 1.1].map(x => x*stateSize)
     switch (`${horizontal} ${vertical}`){
@@ -518,11 +518,11 @@ function App(){
     //calculate the anchor point
     let ydist = Math.abs(y2 - y1)
     let xdist = Math.abs(x2 - x1)
-    let thetaR = xdist == 0 ? Math.PI/2 : Math.atan(ydist / xdist)
+    let thetaR = xdist === 0 ? Math.PI/2 : Math.atan(ydist / xdist)
     let offsetDist = Math.sqrt((xdist/2)**2 + (ydist/2)**2)
     let xoff = 0.5*offsetDist*Math.sin(thetaR)
     let yoff = 0.5*offsetDist*Math.cos(thetaR)
-    let upper = x2 == x1 ? y2 > y1 : x2 > x1
+    let upper = x2 === x1 ? y2 > y1 : x2 > x1
 		let hDir = x2 > x1 ? 1 : -1 //edge case of 0 cancels the term so don't care
     let vDir = y2 > y1 ? 1 : -1
     let hDirOff = vDir 
@@ -603,10 +603,13 @@ function App(){
 
 
   return(
-    <main className="flex w-screen h-screen">
+    <main className="flex flex-col w-screen h-screen">
+      <h1 className='bg-green-100 text-4xl text-center text-black'>Finite Automata Generator</h1>
+      <h3 className='bg-green-100 text-2xl text-center text-black'> by Andrew Toussaint</h3>
+      <div id="bodyWrapper" className='flex w-screen grow'>
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
-              <div className="flex-grow-1 flex flex-col bg-purple-500 w-full text-black">
-                <div id="inputToggles" className="flex w-full gap-2">
+              <div className="flex flex-col h-full basis-3/4 bg-red-100 w-full text-black overflow-auto">
+                <div id="inputToggles" className="flex w-full gap-2 bg-purple-100">
                   <button 
                     className="flex bg-red-400 w-30 justify-center hover:cursor-pointer hover:bg-red-600 rounded-t-lg"
                     onClick={() => handleInputTypeChange(false)}>gui input</button>
@@ -614,9 +617,9 @@ function App(){
                   className="flex bg-blue-400 w-30 justify-center hover:cursor-pointer hover:bg-blue-600 rounded-t-lg"
                   onClick={() => handleInputTypeChange(true)}>text input</button>
                 </div>
-                <div className="flex flex-grow-1 bg-green-100">
+
                   {inputIsText ?(
-                      <div className="flex flex-col flex-grow-1 bg-blue-100">
+                      <div className="flex flex-col grow min-h-0 bg-blue-100">
                         <p className="text-black-sm px-4 py-2">
                           Instructions: Each line of the text below defines a transition from one state to another on an input read. 
                           The order should be &lt;start state&gt; &lt;character&gt; &lt;end state&gt; For example, if you had states named q1 and q2 and an alphabet character 1
@@ -624,7 +627,7 @@ function App(){
                           To signify an epsilon transition use "\e" without quotation marks. To signify a final state precede the state name with "*". The starting state is 
                           required to be named "S". 
                         </p>
-                        <div id="uploadWrapper" className="flex justify-center space-between w-full bg-green-100 p-2">
+                        <div id="uploadWrapper" className="flex justify-center space-between w-full bg-blue-100 p-2">
                     	    <label
 											        htmlFor="uploadFile"
 											        className="text-sm text-black rounded-lg
@@ -652,9 +655,9 @@ function App(){
                               Download FA as txt File
                             </button>
                         </div>
-                        <div id="textInputWrapper" className="w-full h-full p-2 bg-gray-200">
+                        <div id="textInputWrapper" className="flex justify-center grow p-2 bg-blue-100">
                         	<textarea
-                        	  className="bg-white w-full h-full "
+                        	  className="bg-white w-50 h-full"
                         	  id="textInput"
                         	  value={textInput}
                             onChange={(e) => updateTextInput(e.target.value)}
@@ -671,9 +674,8 @@ function App(){
                       </div>
                     )
                   :(
-                      <div className="flex flex-grow-1 bg-red-400">
-                        {/*Put everything in here!*/}
-                        <div className="flex flex-col flex-3 bg-red-100 items-center justify-center text-black">
+                      <div id="guiInputWrapper" className="flex flex-grow w-full">
+                        <div className="flex flex-col flex-1 h-full bg-red-100 items-center justify-center text-black w-full h-full">
                         	<h1 className="text-2xl">Describe the FA:</h1>
                           <div id="alphabetwrap">
               							<h2 className="text-xl">Alphabet:</h2>
@@ -778,10 +780,10 @@ function App(){
                       </div>
                     )
                   }
-                </div>
+
               </div>
-          <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
-            Analysis here
+          <div className="flex flex-col basis-1/4 bg-yellow-100 items-center justify-center text-black">
+            <h2 className='text-2xl'>Automata Status</h2>
             <button 
               className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
               onClick={() => testFunction()}
@@ -791,15 +793,10 @@ function App(){
           </div>
       </div>
       <div id="righthalf" className="flex flex-col w-1/2 h-full bg-orange-100 text-black p-5">
-        <h2>Automata here</h2>
-        <button
-        className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-        onClick={generateSVG}>
-          Generate Automata
-        </button>
+        <h2 className="text-2xl">Automata:</h2>
         <div
         id="svgWrapper1"
-        className="w-full h-full bg-purple-300 max-w-full max-h-full overflow-auto rounded-lg">
+        className="w-full h-full bg-red-100 max-w-full max-h-full overflow-auto rounded-lg">
           <div 
           id="svgWrapper2"
           className="flex-col items-center justify-center w-full h-full bg-green-300 max-w-full max-h-full"
@@ -811,7 +808,7 @@ function App(){
       				<polygon points="0 0, 5 1.75, 0 3.5" fill="black" />
 			    	</marker>
   					</defs>
-            <path d="M 0 100 H 60" stroke="red" strokeWidth="4" fill="none" markerEnd="url(#arrowhead)" /> 
+            <path d={`M 0 ${statePadding} H ${statePadding-40}`} stroke="red" strokeWidth="4" fill="none" markerEnd="url(#arrowhead)" /> 
              
               {states.map((s, index) => {
 								//calculate x and y index
@@ -871,6 +868,7 @@ function App(){
             </div>
         </div>
       )}
+      </div>
     </main>
   )
 }
