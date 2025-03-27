@@ -4,8 +4,6 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //urgent
-// - removing state changes all references to it in tTable to "_"
-// - removing character updates tTable
 // - upload file to textbox
 // - download textbox as file
 // - build
@@ -14,17 +12,13 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 // - epsilon transition check box
 // - choose multiple states in state transition popup
 
-//animatino
+//animation
 // - input word box
 // - animate transitions
 // - animate reading each letter
 
 //qol
 // - hovering a circle or an arrow shows useful highlights
-
-
-
-
 
 
 export function Welcome(){
@@ -103,10 +97,32 @@ export function Welcome(){
     setSInput(text);
   }
 
+  const handleInputTypeChange = (isText: boolean) =>{
+    if(isText){
+			//transalte the tTable to a set of transitions
+      let transitions: string[] = []
+			tTable.forEach((stranses, si) => {
+				stranses.forEach((trans, ai) => {
+          let start = states[si]
+          let read = alphabet[ai]
+          let end = trans
+          let sfinal = isFinal[si] ? "*" :""
+          let efinal = isFinal[states.indexOf(end)] ? "*":""
+					if(end !== "_")
+          	transitions.push(`${sfinal}${start} ${read} ${efinal}${end}`)
+        })
+      })
+
+      setTextInput(transitions.join("\n"))
+    }
+
+		setInputIsText(isText)
+  }
+
   const updateTextInput = (text: string) => {
-		console.log("Text input:", text);
+		//console.log("Text input:", text);
     let transArr = text.trim().split("\n");
-    console.log("Trans Arr", transArr);
+    //console.log("Trans Arr", transArr);
     let errorArr: string[] = []
 
     //check that all transitions are the correct format
@@ -129,7 +145,7 @@ export function Welcome(){
         const matches = t.match(transRe);
         
         if (matches){
-          console.log("matched: ", "1", matches[1], "2", matches[2], "3", matches[3])
+          //console.log("matched: ", "1", matches[1], "2", matches[2], "3", matches[3])
           //add to alphabet
           if(tAlphabet.indexOf(matches[2]) < 0){
             tAlphabet.push(matches[2])
@@ -161,9 +177,9 @@ export function Welcome(){
           }
 
           //add the transition
-          console.log("state: ", tStates.indexOf(matches[1]), tStates)
-          console.log("alphabet: ", tAlphabet.indexOf(matches[2]), tAlphabet)
-          console.log("table: ", tTTable)
+          //console.log("state: ", tStates.indexOf(matches[1]), tStates)
+          //console.log("alphabet: ", tAlphabet.indexOf(matches[2]), tAlphabet)
+          //console.log("table: ", tTTable)
           tTTable[tStates.indexOf(matches[1])][tAlphabet.indexOf(matches[2])] = matches[3]
 
           if( t[t.indexOf(matches[1]) - 1] === "*"){
@@ -564,10 +580,10 @@ export function Welcome(){
                 <div id="inputToggles" className="flex w-full gap-2">
                   <button 
                     className="flex bg-red-400 w-30 justify-center hover:cursor-pointer hover:bg-red-600 rounded-t-lg"
-                    onClick={() => setInputIsText(false)}>gui input</button>
+                    onClick={() => handleInputTypeChange(false)}>gui input</button>
                   <button 
                   className="flex bg-blue-400 w-30 justify-center hover:cursor-pointer hover:bg-blue-600 rounded-t-lg"
-                  onClick={() => setInputIsText(true)}>text input</button>
+                  onClick={() => handleInputTypeChange(true)}>text input</button>
                 </div>
                 <div className="flex flex-grow-1 bg-green-100">
                   {inputIsText ?(
@@ -579,6 +595,33 @@ export function Welcome(){
                           To signify an epsilon transition use "\e" without quotation marks. To signify a final state precede the state name with "*". The starting state is 
                           required to be named "S". 
                         </p>
+                        <div id="uploadWrapper" className="flex justify-center space-between w-full bg-green-100 p-2">
+                    	    <label
+											        htmlFor="uploadFile"
+											        className="text-sm text-black rounded-lg
+											        mr-5 py-1 px-3 border-[1px]
+											        font-medium
+											        bg-gray-100 text-black
+											        hover:cursor-pointer hover:bg-gray-300 cursor-pointer">
+											        Upload FA from txt File
+                              <input
+											      		type="file"
+											      		id="uploadFile"
+											      		accept=".txt"
+											      		name="upload"
+											      		className="hidden"  // Hide the original input
+											      		onChange={(e) => alert("ok")}
+										  					/>
+											    </label>
+											    
+
+                            <button
+                            id="downloadFile"
+                            className="text-sm text-black rounded-lg mr-5 py-1 px-3 border-[1px] font-medium bg-gray-100
+                            hover:cursor-pointer hover:bg-gray-300">
+                              Download FA
+                            </button>
+                        </div>
                         <div id="textInputWrapper" className="w-full h-full p-2 bg-gray-200">
                         	<textarea
                         	  className="bg-white w-full h-full "
