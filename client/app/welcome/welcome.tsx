@@ -439,111 +439,7 @@ export function Welcome(){
   return(
     <main className="flex w-screen h-screen">
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
-          <div className="flex flex-col flex-3 bg-red-100 items-center justify-center text-black">
-            <h1 className="text-2xl">Describe the FA:</h1>
-            <div id="alphabetwrap">
-              <h2 className="text-xl">Alphabet:</h2>
-              <div id="alphabetDisplay">{alphabet.map( char => {
-                return(
-                  <button 
-                  onClick={() => removeCharacter(char)}
-                  className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
-                  title={"remove " + char + " from alphabet"}
-                  key={char}>{char}</button>
-                )
-              })}</div> 
-              <div id="alphabetInput">
-                  Add Character to alphabet: 
-                  <input 
-                    type="text" 
-                    value={aInput}
-                    onChange={(e) => updateAInput(e.target.value)}
-                    className="bg-white border-black" 
-                    onKeyDown={alphaInKeydown}/>
-                  <div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
-                  <button 
-                    className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-                    onClick={() => addCharacter()}
-                  >
-                    Add
-                  </button>
-              </div>
-            </div>
-
-            <div id="stateWrap">
-              <h2 className="text-xl">States:</h2>
-                <div id="statesDisplay">{states.map( st => {
-                  if (st === "S"){
-										return(
-                      <button 
-                      onClick={() => alert("Cannot remove start state")}
-                      className="text-black solid-black px-4 py-2 cursor-pointer"
-                      title={"Cannot remove start state" + st}>{st}</button>
-                    )
-                  }else{
-										return(
-                      <button 
-                      onClick={() => removeState(st)}
-                      className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
-                      title={"remove state " + st}>{st}</button>
-                    )
-                  }
-                })}</div> 
-                <div id="stateInput">
-                    Add new state: 
-                    <input 
-                      type="text" 
-                      value={sInput}
-                      onChange={(e) => updateSInput(e.target.value)}
-                      className="bg-white border-black"
-                      onKeyDown={stateInKeydown} />
-                    <div id="stateError" className="text-red-500 h-2em">{sError}</div>
-                    <button 
-                      className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-                      onClick={() => addState()}
-                    >
-                      Add
-                    </button>
-              </div>
-            </div>
-
-            <div id="transitionWrap">
-                <h2 className="text-xl">Transitions:</h2>
-                <table className="min-w-full table-auto border-collapse border border-gray-300">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-2">finality</th>
-                      <th className="px-4 py-2">states</th>
-                      {alphabet.map((col, colIndex) => (
-                        <th key={colIndex}>{col}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {states.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        <td className="text-center"><input
-                        type="checkbox"
-                        checked={isFinal[rowIndex]}
-                        value={row}
-                        onChange={() => handleFinalityChange(rowIndex)}
-                        /></td>
-                        <td className="text-center">{row}</td>
-                        {tTable[rowIndex].map((v, index) => (
-                          <td key={row + "-" + alphabet[index]}><button
-                          onClick={() => toggleTransEditor(alphabet[index], row)}
-                          title="edit"
-                          className="text-black solid-black px-4 py-2 cursor-pointer hover:bg-gray-100"
-                          >{v}</button></td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-            </div>
-            
-            <div className="flex flex-col flex-grow-1 w-full">
-              <div className="flex-grow-1 flex flex-col bg-purple-500 w-full">
+              <div className="flex-grow-1 flex flex-col bg-purple-500 w-full text-black">
                 <div id="inputToggles" className="flex w-full gap-2">
                   <button 
                     className="flex bg-red-400 w-30 justify-center hover:cursor-pointer hover:bg-red-600 rounded-t-lg"
@@ -564,14 +460,114 @@ export function Welcome(){
                     )
                   :(
                       <div className="flex flex-grow-1 bg-red-400">
-                        gui
+                        {/*Put everything in here!*/}
+                        <div className="flex flex-col flex-3 bg-red-100 items-center justify-center text-black">
+                        	<h1 className="text-2xl">Describe the FA:</h1>
+                          <div id="alphabetwrap">
+              							<h2 className="text-xl">Alphabet:</h2>
+              							<div id="alphabetDisplay">
+                              {alphabet.map( char => {
+              						  	return(
+               						   		<button 
+               						   		onClick={() => removeCharacter(char)}
+               						   		className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
+               						   		title={"remove " + char + " from alphabet"}
+               						  	 	key={char}>{char}</button>
+                							)})}
+                          	</div> 
+              							<div id="alphabetInput">
+                  						Add Character to alphabet: 
+                  						<input 
+                  						  type="text" 
+                  						  value={aInput}
+                  						  onChange={(e) => updateAInput(e.target.value)}
+                  						  className="bg-white border-black" 
+                  						  onKeyDown={alphaInKeydown}/>
+                  						<div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
+               						   <button 
+                						  className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+              						      onClick={() => addCharacter()}
+                						  >
+                						    Add
+                						  </button>
+             								</div>
+            							</div>
+                          <div id="stateWrap">
+            							  <h2 className="text-xl">States:</h2>
+            							    <div id="statesDisplay">{states.map( st => {
+            							      if (st === "S"){
+																	return(
+            							          <button 
+            							          onClick={() => alert("Cannot remove start state")}
+            							          className="text-black solid-black px-4 py-2 cursor-pointer"
+            							          title={"Cannot remove start state" + st}>{st}</button>
+            							        )
+            							      }else{
+																	return(
+            							          <button 
+            							          onClick={() => removeState(st)}
+            							          className="text-black solid-black px-4 py-2 cursor-pointer hover:text-red-500 hover:bg-gray-100"
+            							          title={"remove state " + st}>{st}</button>
+            							        )
+            							      }
+            							    })}</div> 
+            							    <div id="stateInput">
+            							        Add new state: 
+            							        <input 
+            							          type="text" 
+            							          value={sInput}
+            							          onChange={(e) => updateSInput(e.target.value)}
+            							          className="bg-white border-black"
+            							          onKeyDown={stateInKeydown} />
+            							        <div id="stateError" className="text-red-500 h-2em">{sError}</div>
+            							        <button 
+            							          className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+            							          onClick={() => addState()}
+            							        >
+            							          Add
+            							        </button>
+            							  </div>
+            							</div>
+                          <div id="transitionWrap">
+           						     <h2 className="text-xl">Transitions:</h2>
+           						     <table className="min-w-full table-auto border-collapse border border-gray-300">
+           						       <thead>
+           						         <tr>
+           						           <th className="px-4 py-2">finality</th>
+           						           <th className="px-4 py-2">states</th>
+           						           {alphabet.map((col, colIndex) => (
+           						             <th key={colIndex}>{col}</th>
+           						           ))}
+           						         </tr>
+           						       </thead>
+           						       <tbody>
+           						         {states.map((row, rowIndex) => (
+           						           <tr key={rowIndex}>
+           						             <td className="text-center"><input
+           						             type="checkbox"
+           						             checked={isFinal[rowIndex]}
+           						             value={row}
+           						             onChange={() => handleFinalityChange(rowIndex)}
+           						             /></td>
+           						             <td className="text-center">{row}</td>
+           						             {tTable[rowIndex].map((v, index) => (
+           						               <td key={row + "-" + alphabet[index]}><button
+           						               onClick={() => toggleTransEditor(alphabet[index], row)}
+           						               title="edit"
+           						               className="text-black solid-black px-4 py-2 cursor-pointer hover:bg-gray-100"
+           						               >{v}</button></td>
+           						             ))}
+           						           </tr>
+           						         ))}
+           						       </tbody>
+           						     </table>
+           						 		</div>
+                        </div>
                       </div>
                     )
                   }
                 </div>
               </div>
-            </div>
-          </div>
           <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
             Analysis here
             <button 
