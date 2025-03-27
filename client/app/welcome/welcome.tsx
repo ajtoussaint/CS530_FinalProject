@@ -6,7 +6,9 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //urgent
 // - place hemispherical arrows based on ttable
 // - choose location on circle edge to best suit arrow
-// - deal with self transitions
+// - change explanation of how to use text input to a popup
+// - big text input box
+// - update ttable function that is a wrapper for setTtable to update both text and gui (if needed)
 // - build
 
 
@@ -14,9 +16,7 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 // - prevent adding same state twice (general state input error checking)
 
 // - epsilon transition check box
-// - change explanation of how to use text input to a popup
-// - big text input box
-// - update ttable function that is a wrapper for setTtable to update both text and gui (if needed)
+
 
 // - hovering a circle or an arrow shows useful highlights
 
@@ -302,11 +302,27 @@ export function Welcome(){
 
     let loop = false
 
-    if(x1 == x2 && y1 == y2){
-      loop = true
-      soy = -stateSize*1.1
-      eox = stateSize*1.1
+    //determine relative directions
+    let horizontal = x1 == x2 ? 0 : x1 > x2 ? -1 : 1
+    let vertical = y1 == y2 ? 0: y1 > y2 ? -1 : 1
+	
+    const magnitudes = [0.33, 0.67, 1, 1.1]
+    switch (`${horizontal} ${vertical}`){
+      case "0 0":
+        //destination = start
+        loop = true
+        soy = -stateSize*magnitudes[3]
+      	eox = stateSize*magnitudes[3]
+      case "0 -1":
+        //visually N
+
     }
+
+    /*if(x1 == x2 && y1 == y2){
+      loop = true
+      soy = -stateSize*magnitudes[3]
+      eox = stateSize*magnitudes[3]
+    }*/
 
     x1 += sox;
     x2 += eox;
