@@ -6,9 +6,6 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 
 //todo list
 
-//urgent
-// - build
-
 //NDFA
 // - epsilon transition check box
 // - choose multiple states in state transition popup
