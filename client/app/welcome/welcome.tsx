@@ -4,26 +4,24 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //urgent
-// - place hemispherical arrows based on ttable
-// - choose location on circle edge to best suit arrow
 // - change explanation of how to use text input to a popup
 // - big text input box
 // - update ttable function that is a wrapper for setTtable to update both text and gui (if needed)
+// - upload file to textbox
+// - download textbox as file
 // - build
 
-
-//qol
-// - prevent adding same state twice (general state input error checking)
-
+//NDFA
 // - epsilon transition check box
-
-
-// - hovering a circle or an arrow shows useful highlights
+// - choose multiple states in state transition popup
 
 //animatino
 // - input word box
 // - animate transitions
 // - animate reading each letter
+
+//qol
+// - hovering a circle or an arrow shows useful highlights
 
 
 
@@ -544,14 +542,14 @@ export function Welcome(){
                 </table>
             </div>
             
-            {/*<div className="flex flex-col flex-grow-1">
+            <div className="flex flex-col flex-grow-1 w-full">
               <div className="flex-grow-1 flex flex-col bg-purple-500 w-full">
-                <div id="inputToggles" className="flex w-full justify-around">
+                <div id="inputToggles" className="flex w-full gap-2">
                   <button 
-                    className="flex bg-red-400 w-30 justify-center hover:cursor-pointer hover:bg-red-600"
+                    className="flex bg-red-400 w-30 justify-center hover:cursor-pointer hover:bg-red-600 rounded-t-lg"
                     onClick={() => setInputIsText(false)}>gui input</button>
                   <button 
-                  className="flex bg-blue-400 w-30 justify-center hover:cursor-pointer hover:bg-blue-600"
+                  className="flex bg-blue-400 w-30 justify-center hover:cursor-pointer hover:bg-blue-600 rounded-t-lg"
                   onClick={() => setInputIsText(true)}>text input</button>
                 </div>
                 <div className="flex flex-grow-1 bg-green-100">
@@ -572,7 +570,7 @@ export function Welcome(){
                   }
                 </div>
               </div>
-            </div>*/}
+            </div>
           </div>
           <div className="flex-1 bg-yellow-100 items-center justify-center text-black">
             Analysis here
@@ -639,26 +637,6 @@ export function Welcome(){
                   }
                 })
               })}
-              {/*<SvgTransition charName="b" x1={130} y1={70} x2={370} y2={70} />
-              <SvgTransition charName="q3 q1" x1={370} y1={130} x2={130} y2={130}  />
-
-              <SvgTransition charName="q4 q1" x1={370} y1={370} x2={130} y2={130} />
-              <SvgTransition charName="q1 q4" x1={130} y1={130} x2={370} y2={370} />
-
-              <SvgTransition charName="q2 q4" x1={130} y1={370} x2={370} y2={370} />
-              <SvgTransition charName="q4 q2" x1={370} y1={430} x2={130} y2={430}  />
-
-              <SvgTransition charName="q1 q2" x1={130} y1={130} x2={130} y2={370} />
-              <SvgTransition charName="a" x1={70} y1={370} x2={70} y2={130}  />
-
-              <SvgTransition charName="q3 q4" x1={430} y1={130} x2={430} y2={370}  />
-              <SvgTransition charName="q4 q3" x1={370} y1={370} x2={370} y2={130}  />
-
-              <SvgTransition charName="q2 q3" x1={130} y1={370} x2={370} y2={130} />
-              <SvgTransition charName="q3 q2" x1={370} y1={130} x2={130} y2={370} />
-
-              <SvgTransition charName="q2 q5" x1={130} y1={370} x2={670} y2={130} />
-              <SvgTransition charName="q5 q1" x1={670} y1={130} x2={130} y2={130} />*/}
             </svg>
           </div>
         </div>
