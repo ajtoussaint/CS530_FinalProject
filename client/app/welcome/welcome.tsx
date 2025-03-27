@@ -4,8 +4,6 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //urgent
-// - upload file to textbox
-// - download textbox as file
 // - build
 
 //NDFA
