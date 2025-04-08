@@ -5,7 +5,6 @@ import { useState, useRef, useEffect } from "react";
 import type { KeyboardEvent, ChangeEvent } from "react";
 
 //todo list
-
 // - multiple transitions with same start and end are comma separated list
 
 //NDFA
@@ -16,6 +15,7 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 // - animate transitions
 // - animate reading each letter
 
+const EPSILON = "\\e"
 
 function App(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
@@ -123,7 +123,7 @@ function App(){
     let errorArr: string[] = []
 
     //check that all transitions are the correct format
-    const transRe = /^\*?([a-zA-Z0-9]+)\s+([a-zA-Z0-9]+)\s+\*?([a-zA-Z0-9]+)$/
+    const transRe = /^\*?([a-zA-Z0-9]+)\s+(\\?[a-zA-Z0-9]+)\s+\*?([a-zA-Z0-9]+)$/
 
     //set up values to use for updating alphabet, states, ect
     let tAlphabet: string[] = []
@@ -194,7 +194,7 @@ function App(){
 						//first state is too long
             errorArr.push(`Starting state on line ${index + 1} is longer than 4 characters`)
           }
-          if(matches[2].length > 1 && matches[1] !== "\\e"){
+          if(matches[2].length > 1 && matches[2] !== EPSILON){
 						//first state is too long
             errorArr.push(`Transition character on line ${index + 1} is longer than 1 character`)
           }
@@ -234,14 +234,17 @@ function App(){
   }
 
   //ttable works
-  const addCharacter = () =>{
+  const addCharacter = (charToAdd:string = "") =>{
+    if(!charToAdd)
+      charToAdd = aInput;
+
     if(!aError && aInput.length === 1){
       setAlphabet( (prev) => {
-        return [...prev, aInput];
+        return [...prev, charToAdd];
       })
 
       //update the t table to add a new "_" value to each array
-      setTTable( (prev) => prev.map(x => [...x, []])) //d - _ to [_]
+      setTTable( (prev) => prev.map(x => [...x, []]))
 
       setAInput("");
     }
@@ -272,8 +275,25 @@ function App(){
     setAlphabet( (prev) => {
       return prev.filter(c => c !== char)
     })
+  }
 
-    
+  const [usingEpsilon, setUsingEpsilon] = useState<boolean>(false)
+
+  const toggleEpsilon = () => {
+    console.log("Toggle e from", usingEpsilon)
+    if(!usingEpsilon){
+      console.log("adding e")
+      setAlphabet( (prev) => {
+        return [...prev, EPSILON];
+      })
+
+      //update the t table to add a new "_" value to each array
+      setTTable( (prev) => prev.map(x => [...x, []]))
+    }else{
+      console.log("remvoing e")
+      removeCharacter(EPSILON)
+    }
+    setUsingEpsilon(p => !p)
   }
 
   const stateInKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -698,7 +718,7 @@ function App(){
                           <div id="alphabetwrap">
               							<h2 className="text-xl">Alphabet:</h2>
               							<div id="alphabetDisplay">
-                              {alphabet.map( char => {
+                              {alphabet.filter(x => x !== EPSILON).map( char => {
               						  	return(
                						   		<button 
                						   		onClick={() => removeCharacter(char)}
@@ -716,6 +736,14 @@ function App(){
                   						  className="bg-white border-black" 
                   						  onKeyDown={alphaInKeydown}/>
                   						<div id="alphabetError" className="text-red-500 h-2em">{aError}</div>
+                              <div id="eWrapper">
+                                <input
+                                    type="checkbox"
+                                    checked={usingEpsilon}
+                                    onChange={() => toggleEpsilon()}
+                                    />
+                                Use epsilon (&epsilon;) transitions
+                              </div>
                						   <button 
                 						  className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
               						      onClick={() => addCharacter()}
@@ -768,7 +796,7 @@ function App(){
            						           <th className="px-4 py-2">finality</th>
            						           <th className="px-4 py-2">states</th>
            						           {alphabet.map((col, colIndex) => (
-           						             <th key={colIndex}>{col}</th>
+           						             <th key={colIndex}>{col === EPSILON ? "ε" : col}</th>
            						           ))}
            						         </tr>
            						       </thead>
@@ -853,7 +881,7 @@ function App(){
                       let loc2 = stateIndexToCoords(states.indexOf(trans))
                       return (
                         <SvgTransition 
-                        charName={alphabet[alphaIndex]} 
+                        charName={alphabet[alphaIndex] === EPSILON ? "ε" : alphabet[alphaIndex]} 
                         x1={loc1.x} 
                         y1={loc1.y} 
                         x2={loc2.x} 
