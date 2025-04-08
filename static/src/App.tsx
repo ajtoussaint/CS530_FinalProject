@@ -5,7 +5,6 @@ import { useState, useRef, useEffect } from "react";
 import type { KeyboardEvent, ChangeEvent } from "react";
 
 //todo list
-// - multiple transitions with same start and end are comma separated list
 
 //animation
 // - input word box
