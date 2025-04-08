@@ -33,27 +33,27 @@ function App(){
   //related to editing transition table
   const [toggleTrans, setToggleTrans] = useState(false)
   const [transChar, setTransChar] = useState("");
-  const [transState, setTransState] = useState("");
+  const [transState, setTransState] = useState(""); 
 
   //text Input
   const [textInput, setTextInput] = useState("")
   const [tIError, setTIError] = useState<string[]>([]) //error for state input
 
   //dropdown to select state in transition table
-  const [selectedState, setSelectedState] = useState("")
+  const [selectedState, setSelectedState] = useState<string[]>([]) //d - this will need to be an array
 
   const toggleTransEditor = (char: string, state: string) =>{
     console.log("toggling trans editor", char, state)
     setTransChar(char)
     setTransState(state)
     //set the selected state to what it is in the ttable
-    let stateToSelect = tTable[states.indexOf(state)][alphabet.indexOf(char)]
+    let stateToSelect = tTable[states.indexOf(state)][alphabet.indexOf(char)] //d - this will return an array
     setSelectedState(stateToSelect)
     setToggleTrans(true)
   }
 
   //contains an array for each state, which contains a value for each char in alphabet
-  const [tTable, setTTable] = useState<string[][]>([[]])
+  const [tTable, setTTable] = useState<string[][][]>([[]]) //d - 1 more layer of arrays
 
   const testFunction = () =>{
     console.log("test func")
@@ -96,15 +96,17 @@ function App(){
     if(isText){
 			//transalte the tTable to a set of transitions
       let transitions: string[] = []
-			tTable.forEach((stranses, si) => {
+			tTable.forEach((stranses, si) => { //d -> adjust to tTable being 3xdepth
 				stranses.forEach((trans, ai) => {
-          let start = states[si]
-          let read = alphabet[ai]
-          let end = trans
-          let sfinal = isFinal[si] ? "*" :""
-          let efinal = isFinal[states.indexOf(end)] ? "*":""
-					if(end !== "_")
-          	transitions.push(`${sfinal}${start} ${read} ${efinal}${end}`)
+          trans.forEach(t => {
+            let start = states[si]
+            let read = alphabet[ai]
+            let end = t
+            let sfinal = isFinal[si] ? "*" :""
+            let efinal = isFinal[states.indexOf(end)] ? "*":""
+            if(end !== "_")
+              transitions.push(`${sfinal}${start} ${read} ${efinal}${end}`)
+            })
         })
       })
 
@@ -128,7 +130,7 @@ function App(){
     let tAlphabet: string[] = []
     let tStates: string[] = []
     let tIsFinal: boolean[] = []
-    let tTTable: string[][] = [[]]
+    let tTTable: string[][][] = [[]] //d -> 3x depth
 
     //ignore blank lines
     transArr = transArr.filter(t => t.trim() !== "")
@@ -147,7 +149,7 @@ function App(){
           if(tAlphabet.indexOf(matches[2]) < 0){
             tAlphabet.push(matches[2])
             //increase length of each table in tTable
-            tTTable = tTTable.map(a => [...a, "_"])
+            tTTable = tTTable.map(a => [...a, []]) //d - underscore should be an array
           }
           
           //if either state is not already in the states array push it
@@ -155,9 +157,9 @@ function App(){
             tStates.push(matches[1])
             isFinal.push(false)
             //add new standard lenth to t table
-            let tarr: string[] = []
+            let tarr: string[][] = []
             for(let i =0; i < tAlphabet.length; i++){
-              tarr.push("_")
+              tarr.push([]) //d - underscore should be an array
             }
             tTTable.push(tarr)
           }
@@ -166,9 +168,9 @@ function App(){
             tStates.push(matches[3])
             isFinal.push(false)
             //extend all ttable lengths
-            let tarr: string[] = []
+            let tarr: string[][] = []
             for(let i =0; i < tAlphabet.length; i++){
-              tarr.push("_")
+              tarr.push([]) //d - underscore should be an array
             }
             tTTable.push(tarr)
           }
@@ -177,7 +179,7 @@ function App(){
           //console.log("state: ", tStates.indexOf(matches[1]), tStates)
           //console.log("alphabet: ", tAlphabet.indexOf(matches[2]), tAlphabet)
           //console.log("table: ", tTTable)
-          tTTable[tStates.indexOf(matches[1])][tAlphabet.indexOf(matches[2])] = matches[3]
+          tTTable[tStates.indexOf(matches[1])][tAlphabet.indexOf(matches[2])].push(matches[3]) //d - if _ replace otherwise push new transition
 
           if( t[t.indexOf(matches[1]) - 1] === "*"){
             //first state is a final state
@@ -240,7 +242,7 @@ function App(){
       })
 
       //update the t table to add a new "_" value to each array
-      setTTable( (prev) => prev.map(x => [...x, "_"]))
+      setTTable( (prev) => prev.map(x => [...x, []])) //d - _ to [_]
 
       setAInput("");
     }
@@ -292,9 +294,9 @@ function App(){
       })
       setIsFinal((prev) => [...prev, false])
       setSInput("")
-      let arr: string[] = []
+      let arr: string[][] = []
     	for(let i =0; i < alphabet.length; i++){
-      	arr.push("_")
+      	arr.push([]) //d _ to [_]
     	}
     	//add new array to the t table
     	setTTable( (prev) => [...prev, arr])
@@ -313,8 +315,7 @@ function App(){
       console.log("removing state", st)
       newar = newar.map(n1 => {
         return n1.map( n2 => {
-          console.log(n2, st)
-					return n2 === st ? "_" : n2
+          return n2.filter(n => n !== st)
         })
       })
       return newar
@@ -334,10 +335,46 @@ function App(){
     })
   }
 
-  const handleStateSelect = (e: ChangeEvent<HTMLSelectElement>, state: string, char: string) =>{
+  const handleStateSelect = (e: ChangeEvent<HTMLSelectElement>, state: string, char: string, index: number) =>{ //d - pass a value for the index in the lowest level array
     //also needs to update the ttable
-    tTable[states.indexOf(state)][alphabet.indexOf(char)] = e.target.value
-    setSelectedState(e.target.value);
+    //tTable[states.indexOf(state)][alphabet.indexOf(char)] = e.target.value //d - use setState instead, also consider index
+    setTTable( prev => {
+      let newar = [...prev]
+      newar[states.indexOf(state)][alphabet.indexOf(char)][index] = e.target.value;
+      return newar;
+    })
+    setSelectedState(prev => {
+      let newar = [...prev]
+      newar[index] = e.target.value
+      return newar
+    });
+  }
+
+  const addTransitionState = (startState: string, onChar:string) => {
+    //extend the deepest array in the ttable
+    console.log("Adding transition option to ", startState, " on ", onChar)
+    const initialLength = tTable[states.indexOf(startState)][alphabet.indexOf(onChar)].length
+    setTTable( prev => {
+      let newar = [...prev]
+      console.log("Before pusing state: ", newar)
+      if(newar[states.indexOf(startState)][alphabet.indexOf(onChar)].length === initialLength){
+        newar[states.indexOf(startState)][alphabet.indexOf(onChar)].push(states[0])
+      }
+      console.log("After pusing state: ", newar)
+      return newar
+    })
+  }
+
+  const removeTransitionState = (startState: string, onChar:string, index:number) => {
+    console.log("Removing transition option", startState, onChar, index)
+    const initialLength = tTable[states.indexOf(startState)][alphabet.indexOf(onChar)].length
+    setTTable( prev => {
+      let newar = [...prev]
+      if(newar[states.indexOf(startState)][alphabet.indexOf(onChar)].length === initialLength){
+        newar[states.indexOf(startState)][alphabet.indexOf(onChar)].splice(index, 1)
+      }
+      return newar
+    })
   }
 
   const handleFinalityChange = (i:number) => {
@@ -373,21 +410,6 @@ function App(){
     setSvgWidth(requiredWidth)
   }
 
-
-  /*const generateSVG = () => {
-    console.log("generating svg...")
-		let width = svgRef.current?.width.baseVal.value
-    let height = svgRef.current?.height.baseVal.value
-    if(width && height){
-			let nodesInCol = Math.ceil((height-(2 * statePadding))/stateSpacing)
-      let requiredWidth = (2 * statePadding) + (Math.ceil(states.length / nodesInCol) - 1) * stateSpacing
-      console.log("nodes", nodesInCol , "w", requiredWidth)
-      setSvgWidth(requiredWidth)
-    }else{
-      console.warn("not yet rendered the svg -andrew")
-    }
-    
-  }*/
 
   type SvgStateProps = {
     sName: string;
@@ -574,7 +596,7 @@ function App(){
 
 
 
-  //chatgpt generated functions
+  //chatgpt generated function
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === 'text/plain') {
@@ -766,7 +788,7 @@ function App(){
            						               onClick={() => toggleTransEditor(alphabet[index], row)}
            						               title="edit"
            						               className="text-black solid-black px-4 py-2 cursor-pointer hover:bg-gray-100"
-           						               >{v}</button></td>
+           						               >{"{" + v.join(", ") + "}"}</button></td>
            						             ))}
            						           </tr>
            						         ))}
@@ -779,6 +801,7 @@ function App(){
                   }
 
               </div>
+              {/*This can go away */}
           <div className="flex flex-col basis-1/4 bg-yellow-100 items-center justify-center text-black">
             <h2 className='text-2xl'>Automata Status</h2>
             <button 
@@ -818,24 +841,26 @@ function App(){
                   )
                 }
               })}
-
+              {/*delta - need to account for when a state has multiple transitions to the same place */}
               {tTable.map((transitions, stateIndex) => {
                 return transitions.map((t, alphaIndex) => {
-                  if(t === "_"){
+                  if(t.length <= 0){
                     return (
                       <g></g>
                     )
                   }else{
-                    let loc1 = stateIndexToCoords(stateIndex)
-                    let loc2 = stateIndexToCoords(states.indexOf(t))
-                    return (
-                      <SvgTransition 
-                      charName={alphabet[alphaIndex]} 
-                      x1={loc1.x} 
-                      y1={loc1.y} 
-                      x2={loc2.x} 
-                      y2={loc2.y}/>
-                    )
+                    return t.map(trans => {
+                      let loc1 = stateIndexToCoords(stateIndex)
+                      let loc2 = stateIndexToCoords(states.indexOf(trans))
+                      return (
+                        <SvgTransition 
+                        charName={alphabet[alphaIndex]} 
+                        x1={loc1.x} 
+                        y1={loc1.y} 
+                        x2={loc2.x} 
+                        y2={loc2.y}/>
+                      )
+                    })
                   }
                 })
               })}
@@ -847,16 +872,34 @@ function App(){
         <div className="fixed inset-0 flex items-center justify-center bg-black/50">
             <div className="flex flex-col bg-white p-6 rounded-lg shadow-xl text-center">
               <h2 className="text-black text-xl font-bold">When in state "{transState}" reading "{transChar}" transition to</h2>
-              <select
-              id="stateDropdown"
-              value={selectedState}
-              className="text-black w-full p-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-              onChange={(e) => handleStateSelect(e, transState, transChar)}>
-                <option value="_">No transition</option>
-                {states.map( state => (
-                  <option value={state}>{state}</option>
-                ))}
-              </select>
+              {/*delta - map the tTable lowest level array to several dropdowns, include an add button*/}
+              {tTable[states.indexOf(transState)][alphabet.indexOf(transChar)].map( (trans,i) => {
+                return(
+                  <div id="transitionOptionWrapper" className='flex'>
+                    <select
+                    id="stateDropdown"
+                    value={selectedState[i]}
+                    className="text-black w-full my-4 p-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) => handleStateSelect(e, transState, transChar, i)}>
+                      <option value="_">No transition</option>
+                      {states.map( state => (
+                        <option value={state}>{state}</option>
+                      ))}
+                    </select>
+                    <button
+                    title="remove"
+                    className="px-4 py-2 my-4 mx-2 bg-red-300 text-black font-semibold rounded-lg shadow-md hover:bg-red-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                    onClick={() => removeTransitionState(transState, transChar, i)}>
+                      X
+                    </button>
+                  </div>
+                )
+              })}
+              <button
+              className="px-4 py-2 my-4 bg-green-300 text-black font-semibold rounded-lg shadow-md hover:bg-green-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+              onClick={() => addTransitionState(transState, transChar)}>
+                +Add Transition
+              </button>
               <button
               className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
               onClick={() => setToggleTrans(false)}>
