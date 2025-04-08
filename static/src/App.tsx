@@ -10,7 +10,6 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 
 //NDFA
 // - epsilon transition check box 
-// - choose multiple states in state transition popup <- merge this up to the epsilon branch
 
 //animation
 // - input word box
