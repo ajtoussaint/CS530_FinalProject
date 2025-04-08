@@ -6,17 +6,17 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 
 //todo list
 
+// - multiple transitions with same start and end are comma separated list
+
 //NDFA
-// - epsilon transition check box
-// - choose multiple states in state transition popup
+// - epsilon transition check box 
+// - choose multiple states in state transition popup <- merge this up to the epsilon branch
 
 //animation
 // - input word box
 // - animate transitions
 // - animate reading each letter
 
-//qol
-// - hovering a circle or an arrow shows useful highlights
 
 function App(){
   const [alphabet, setAlphabet] = useState<string[]>([]);
