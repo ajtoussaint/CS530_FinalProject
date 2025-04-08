@@ -365,11 +365,11 @@ function App(){
     const initialLength = tTable[states.indexOf(startState)][alphabet.indexOf(onChar)].length
     setTTable( prev => {
       let newar = [...prev]
-      console.log("Before pusing state: ", newar)
+      //console.log("Before pusing state: ", newar)
       if(newar[states.indexOf(startState)][alphabet.indexOf(onChar)].length === initialLength){
         newar[states.indexOf(startState)][alphabet.indexOf(onChar)].push(states[0])
       }
-      console.log("After pusing state: ", newar)
+      //console.log("After pusing state: ", newar)
       return newar
     })
   }
@@ -438,6 +438,24 @@ function App(){
       	<text x={x} y={y} fontSize={20} fill="black" fontFamily="monospace"	textAnchor="middle" dominantBaseline="middle">{sName}</text>
       </g>
     )
+  }
+
+  type SvgMarkerProps = {
+    state: string;
+    isLast: boolean;
+  }
+
+  const SvgMarker: React.FC<SvgMarkerProps> = ({
+    state,
+    isLast,
+  }) => {
+    let stateIndex = states.indexOf(state);
+    const loc = stateIndexToCoords(stateIndex)
+    let color = "blue"
+    if(isLast){
+      color = isFinal[stateIndex] ? "green" : "red"
+    }
+    return(<circle cx={loc.x} cy={loc.y} r={stateSize*4/3} stroke={color} strokeWidth="10" fill="none" />)
   }
 
   type SvgTransitionProps = {
@@ -636,6 +654,7 @@ function App(){
   const [wordInput, setWordInput] = useState("")
   const [wiError, setWIError] = useState("")
   const [point, setPoint] = useState<string[]>([])
+  const [mLocations, setMLocations] = useState<string[][]>([])
 
   const updateWordInput = (s) => {
     let charflag = false
@@ -731,6 +750,7 @@ function App(){
     })
 
     console.log("ML: ", markerLocations)
+    setMLocations(markerLocations)
 
   }
 
@@ -1016,7 +1036,7 @@ function App(){
                   )
                 }
               })}
-              {/*delta - need to account for when a state has multiple transitions to the same place */}
+
               {tTable.map((transitions, stateIndex) => {
                 return transitions.map((t, alphaIndex) => {
                   if(t.length <= 0){
@@ -1059,6 +1079,14 @@ function App(){
                     })
                   }
                 })
+              })}
+
+              {mLocations.length > 0 && mLocations[point.indexOf("^")].map( (cState, mIndex) => {
+                return(
+                  <SvgMarker
+                  state={cState}
+                  isLast={point.indexOf("^") === point.length - 1}/>
+                )
               })}
             </svg>
           </div>
