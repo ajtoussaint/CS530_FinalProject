@@ -4,12 +4,6 @@ import './App.css';
 import { useState, useRef, useEffect } from "react";
 import type { KeyboardEvent, ChangeEvent } from "react";
 
-//todo list
-
-//animation
-// - animate transitions
-// - animate reading each letter
-
 const EPSILON = "\\e"
 
 function App(){
@@ -397,9 +391,9 @@ function App(){
   
   //SVG utils
   const [svgWidth, setSvgWidth] = useState(0)
-  const stateSpacing = 300
-  const statePadding = 200
-  const stateSize = 30
+  const stateSpacing = 200
+  const statePadding = 100
+  const stateSize = 20
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -615,7 +609,7 @@ function App(){
   }
 
   const stateIndexToCoords = (index:number) => {
-    let nodesInCol = Math.ceil((svgHeight-(2 * statePadding))/stateSpacing)
+    let nodesInCol = Math.ceil((svgHeight-(2 * statePadding))/stateSpacing) + 1
     let col = Math.ceil((index+1)/nodesInCol)
     let row = index % nodesInCol
     let x = statePadding + stateSpacing*(col-1);
@@ -672,8 +666,9 @@ function App(){
   }
 
   const loadAnimation = () =>{
+    if(wiError)
+      return //don't animate if there is an error
     //set pointer at the beginning of the word
-    alert("animate")
     let pArr = ["^"]
     for(let i = 0; i < wordInput.length; i++){
       pArr.push("")
@@ -779,13 +774,13 @@ function App(){
   }
 
   return(
-    <main className="flex flex-col w-screen h-screen">
-      <h1 className='bg-green-100 text-4xl text-center text-black'>Finite Automata Generator</h1>
-      <h3 className='bg-green-100 text-2xl text-center text-black'> by Andrew Toussaint</h3>
-      <div id="bodyWrapper" className='flex w-screen grow'>
+    <main className="flex flex-col w-screen h-screen bg-[rgb(56,56,56)]">
+      <h1 className='bg-[rgb(56,56,56)] text-4xl text-center text-gray-100'>Finite Automata Generator</h1>
+      <h3 className='bg-[rgb(56,56,56)] text-2xl text-center text-gray-100'> by Andrew Toussaint</h3>
+      <div id="bodyWrapper" className='flex w-screen grow gap-x-4 p-4 bg-[rgb(56,56,56)]'>
       <div id="lefthalf" className="flex flex-col w-1/2 h-full">
-              <div className="flex flex-col h-full basis-3/4 bg-red-100 w-full text-black overflow-auto">
-                <div id="inputToggles" className="flex w-full gap-2 bg-purple-100">
+              <div className="flex flex-col basis-5/8 max-h-full bg-[rgb(56,56,56)] w-full text-black overflow-auto">
+                <div id="inputToggles" className="flex w-full pl-2 gap-2 bg-[rgb(56,56,56)]">
                   <button 
                     className="flex bg-red-400 w-30 justify-center hover:cursor-pointer hover:bg-red-600 rounded-t-lg"
                     onClick={() => handleInputTypeChange(false)}>gui input</button>
@@ -795,7 +790,7 @@ function App(){
                 </div>
 
                   {inputIsText ?(
-                      <div className="flex flex-col grow min-h-0 bg-blue-100">
+                      <div className="flex flex-col grow min-h-0 bg-blue-100 rounded-lg">
                         <p className="text-black-sm px-4 py-2">
                           Instructions: Each line of the text below defines a transition from one state to another on an input read. 
                           The order should be &lt;start state&gt; &lt;character&gt; &lt;end state&gt; For example, if you had states named q1 and q2 and an alphabet character 1
@@ -831,7 +826,7 @@ function App(){
                               Download FA as txt File
                             </button>
                         </div>
-                        <div id="textInputWrapper" className="flex justify-center grow p-2 bg-blue-100">
+                        <div id="textInputWrapper" className="flex justify-center grow p-2">
                         	<textarea
                         	  className="bg-white w-50 h-full"
                         	  id="textInput"
@@ -850,8 +845,8 @@ function App(){
                       </div>
                     )
                   :(
-                      <div id="guiInputWrapper" className="flex flex-grow w-full">
-                        <div className="flex flex-col flex-1 h-full bg-red-100 items-center justify-center text-black w-full h-full">
+                      <div id="guiInputWrapper" className="flex flex-grow w-full rounded-lg">
+                        <div className="flex flex-col flex-1 h-full bg-red-100 items-center justify-center text-black w-full h-full rounded-lg">
                         	<h1 className="text-2xl">Describe the FA:</h1>
                           <div id="alphabetwrap">
               							<h2 className="text-xl">Alphabet:</h2>
@@ -966,13 +961,13 @@ function App(){
                   }
 
               </div>
-          <div className="flex flex-col basis-1/4 bg-yellow-100 items-center justify-center text-black">
+          <div className="flex flex-col basis-1/4 text-gray-100 bg-[rgb(56,56,56)] items-center justify-center text-black">
               <h3 className='text-xl'>Input a word to see transitions:</h3>
               <input 
                 type="text" 
                 value={wordInput}
                 onChange={(e) => updateWordInput(e.target.value)}
-                className="my-4 bg-white border-black"/>
+                className="my-4 bg-white border-black text-black"/>
               <div id="wordError" className="text-red-500 h-2em">{wiError}</div>
               <button 
                 className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
@@ -982,9 +977,9 @@ function App(){
               </button>
           </div>
       </div>
-      <div id="righthalf" className="flex flex-col w-1/2 h-full bg-orange-100 text-black p-5">
-        <div id="wordTable" className='flex px-4 flex-col basis-1/4 bg-blue-300'>
-            <table className='my-2'>
+      <div id="righthalf" className="flex flex-col w-1/2 rounded-lg h-full bg-[rgb(80,124,124)] text-black p-5">
+        <div id="wordTable" className='flex px-4 flex-col basis-1/8'>
+            <table className=''>
                   <thead className='border border-black'>
                     <tr>
                       <th className="border border-black px-2 py-1">$</th>
@@ -999,11 +994,11 @@ function App(){
             </table>
             <div id="aniButtonWrapper" className='flex justify-around'>
                     <button 
-                    className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none"
+                    className="px-2 py-1 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none"
                     onClick={previousAnimation}
                     >{"<"}</button>
                     <button
-                    className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none"
+                    className="px-2 py-1 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none"
                     onClick={advanceAnimation}
                     >{">"}</button>
             </div>
