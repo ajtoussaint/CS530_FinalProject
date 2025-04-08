@@ -7,7 +7,6 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 
 //animation
-// - input word box
 // - animate transitions
 // - animate reading each letter
 
@@ -49,11 +48,6 @@ function App(){
 
   //contains an array for each state, which contains a value for each char in alphabet
   const [tTable, setTTable] = useState<string[][][]>([[]]) //d - 1 more layer of arrays
-
-  const testFunction = () =>{
-    console.log("test func")
-    alert("This will determine DFA vs. NFA when the project is complete")
-  }
 
   const updateAInput = (text: string) =>{
     console.log(text)
@@ -613,8 +607,6 @@ function App(){
 
   //File upload
 
-
-
   //chatgpt generated function
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -639,6 +631,132 @@ function App(){
     link.click();
   }
 
+  //ANIMATION
+
+  const [wordInput, setWordInput] = useState("")
+  const [wiError, setWIError] = useState("")
+  const [point, setPoint] = useState<string[]>([])
+
+  const updateWordInput = (s) => {
+    let charflag = false
+    s.split('').forEach(c => {
+      if(alphabet.indexOf(c) < 0)
+        charflag=true
+    })
+
+    if(charflag)
+      setWIError("All characters in word must be in alphabet")
+    else
+      setWIError("")
+
+    setWordInput(s)
+  }
+
+  const loadAnimation = () =>{
+    //set pointer at the beginning of the word
+    alert("animate")
+    let pArr = ["^"]
+    for(let i = 0; i < wordInput.length; i++){
+      pArr.push("")
+    }
+    setPoint(pArr)
+
+    //IF using-e calculate epsilon closure of each state
+    let eClosures = [...states].map(x => [x])
+    let changed = false
+    if(usingEpsilon){
+      //add the states reachable by epsilon transition to each states closure
+      states.forEach( (state, index) => {
+        let ets = tTable[index][alphabet.indexOf(EPSILON)]
+        ets.forEach(t => {
+          if(eClosures[index].indexOf(t) < 0){
+            //if the eClosure does not already include this state...
+            eClosures[index].push(t)
+          }
+        })
+      })
+
+      console.log("Directly e reachable: ", eClosures)
+
+      do{
+        changed = false
+        states.forEach( (s, i) => {
+          eClosures[i].forEach( (reachableState, index) => {
+            eClosures[states.indexOf(reachableState)].forEach( (st, ind) => {
+              if(eClosures[i].indexOf(st) < 0){
+                //console.log("Found indirect transition from ", s, " to ", st);
+                changed = true
+                eClosures[i].push(st);
+              }
+            })
+          })
+        })
+      }while(changed)
+      
+      //console.log("Completed eClosure:", eClosures)
+    }
+
+    //create dfa transition table of possible locations for each state on a read
+      //epsilon closure of each state in the lowest transition array
+    let ptTable: string[][][] = []
+    states.forEach( (s, si) => {
+      let arr: string[][] = []
+      alphabet.forEach( (c, ci) => {
+        if(c !== EPSILON){
+          let reachable = tTable[si][ci]
+          let n: string[] = []
+          reachable.forEach( (st, index) => {
+            n = [...n, ...eClosures[states.indexOf(st)]]
+            n = [...new Set(n)]//remvoe duplicates
+          })
+          arr.push(n)
+        }
+      })
+      ptTable.push(arr)
+    })
+    
+    //console.log("PT: ", ptTable)
+
+    //create array of read locations, begin with epsilon closure of S
+
+    let markerLocations: string[][] = []
+    markerLocations.push(eClosures[0])
+    wordInput.split("").forEach( (char,index) => {
+      let nextLocs: string[] = []
+      markerLocations[index].forEach( prevState => {
+        nextLocs = [...nextLocs, ...ptTable[states.indexOf(prevState)][alphabet.indexOf(char)]]
+      })
+      nextLocs = [...new Set(nextLocs)]
+      markerLocations.push(nextLocs)
+    })
+
+    console.log("ML: ", markerLocations)
+
+  }
+
+  const advanceAnimation = () =>{
+    setPoint(p => {
+      let n = [...p]
+      let i = n.indexOf("^")
+      if(i+1 !== n.length){
+        n[i] = ""
+        n[i+1] = "^"
+      }
+      return n
+    })
+  }
+
+  const previousAnimation = () => {
+    setPoint(p => {
+      let n = [...p]
+      let i = n.indexOf("^")
+      if(i !== 0){
+        n[i] = ""
+        n[i-1] = "^"
+      }
+      return n
+    })
+  }
 
   return(
     <main className="flex flex-col w-screen h-screen">
@@ -828,18 +946,48 @@ function App(){
                   }
 
               </div>
-              {/*This can go away */}
           <div className="flex flex-col basis-1/4 bg-yellow-100 items-center justify-center text-black">
-            <h2 className='text-2xl'>Automata Status</h2>
-            <button 
-              className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-              onClick={() => testFunction()}
-            >
-              Testing Button
-            </button>
+              <h3 className='text-xl'>Input a word to see transitions:</h3>
+              <input 
+                type="text" 
+                value={wordInput}
+                onChange={(e) => updateWordInput(e.target.value)}
+                className="my-4 bg-white border-black"/>
+              <div id="wordError" className="text-red-500 h-2em">{wiError}</div>
+              <button 
+                className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                  onClick={() => loadAnimation()}
+                >
+                  Animate
+              </button>
           </div>
       </div>
       <div id="righthalf" className="flex flex-col w-1/2 h-full bg-orange-100 text-black p-5">
+        <div id="wordTable" className='flex px-4 flex-col basis-1/4 bg-blue-300'>
+            <table className='my-2'>
+                  <thead className='border border-black'>
+                    <tr>
+                      <th className="border border-black px-2 py-1">$</th>
+                      {wordInput.split("").map((c,i) => (
+                        <th key={i} className="border border-black px-2 py-1">{c}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>{point.map( (c,i) => (<th key={i}>{c}</th>))}</tr>
+                  </tbody>
+            </table>
+            <div id="aniButtonWrapper" className='flex justify-around'>
+                    <button 
+                    className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none"
+                    onClick={previousAnimation}
+                    >{"<"}</button>
+                    <button
+                    className="px-4 py-2 bg-gray-300 text-black font-semibold rounded-lg shadow-md hover:bg-gray-600 cursor-pointer focus:outline-none"
+                    onClick={advanceAnimation}
+                    >{">"}</button>
+            </div>
+        </div>
         <h2 className="text-2xl">Automata:</h2>
         <div
         id="svgWrapper1"
