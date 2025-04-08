@@ -7,9 +7,6 @@ import type { KeyboardEvent, ChangeEvent } from "react";
 //todo list
 // - multiple transitions with same start and end are comma separated list
 
-//NDFA
-// - epsilon transition check box 
-
 //animation
 // - input word box
 // - animate transitions
@@ -473,6 +470,8 @@ function App(){
     let eoy = 0
     let eox = 0
 
+    let hAnchor = "middle"
+
     let loop = false
 
     //determine relative directions
@@ -493,6 +492,7 @@ function App(){
         soy = -magnitudes[3]
         eox = -magnitudes[0]
         eoy = magnitudes[3]
+        hAnchor = "end"
         break;
       case "-1 -1":
         //visually NW
@@ -529,6 +529,7 @@ function App(){
         soy= magnitudes[3]
         eox = magnitudes[0]
         eoy = -magnitudes[3]
+        hAnchor = "start"
         break;
       case "-1 1":
         //visually SW
@@ -596,7 +597,7 @@ function App(){
         y={cay}
         fontFamily="monospace"
         fontSize={20}
-        textAnchor="middle"
+        textAnchor={hAnchor}
         dominantBaseline="middle">{charName}</text>
       </g>
     )
@@ -877,11 +878,32 @@ function App(){
                     )
                   }else{
                     return t.map(trans => {
+                      //trans is dest state
+                      //stateIndex is original state
+                      //alphaIndex is char we are on
+
+                      let charList: string[] = []
+                      let cancelFlag: boolean = false
+                      charList.push(alphabet[alphaIndex] === EPSILON ? "ε" : alphabet[alphaIndex])
+                      
+                      tTable[stateIndex].forEach( (tSet, aIndex) => {
+                        if(aIndex < alphaIndex){
+                          if(tSet.indexOf(trans) >= 0)
+                            cancelFlag=true//this arrow has already been created so doesn't matter
+                        }else if(aIndex > alphaIndex){
+                          if(tSet.indexOf(trans) >= 0)
+                            charList.push(alphabet[aIndex] === EPSILON ? "ε" : alphabet[aIndex])
+                        }
+                      })
+
+                      if(cancelFlag)
+                        return(<g></g>)
+                    
                       let loc1 = stateIndexToCoords(stateIndex)
                       let loc2 = stateIndexToCoords(states.indexOf(trans))
                       return (
                         <SvgTransition 
-                        charName={alphabet[alphaIndex] === EPSILON ? "ε" : alphabet[alphaIndex]} 
+                        charName={charList.join(",")} 
                         x1={loc1.x} 
                         y1={loc1.y} 
                         x2={loc2.x} 
@@ -908,7 +930,6 @@ function App(){
                     value={selectedState[i]}
                     className="text-black w-full my-4 p-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => handleStateSelect(e, transState, transChar, i)}>
-                      <option value="_">No transition</option>
                       {states.map( state => (
                         <option value={state}>{state}</option>
                       ))}
